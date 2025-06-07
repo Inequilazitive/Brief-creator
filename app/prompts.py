@@ -226,17 +226,27 @@ class PromptBuilder:
 
         return prompt
 
+
     def _add_csv_data_section(self, prompt: str, csv_data: str) -> str:
-        """Add CSV data section to the prompt."""
+        """Add CSV data section to the prompt after a specific reference sentence."""
+
         csv_section = f"\n\nReference Menu CSV Data:\n{csv_data}\n"
-        
-        # Insert before the AI Prompt Output section
-        if "AI Prompt Output" in prompt:
-            prompt = prompt.replace("AI Prompt Output", csv_section + "AI Prompt Output")
+
+        # Define the marker sentence (or part of it if you want to be more flexible)
+        marker = (
+            "Also attached is a CSV file for the Reference Menu of the same ad creative style names "
+            "as the image, but with a proper description and content requirements per brief"
+        )
+
+        if marker in prompt:
+            # Insert the csv_section right after the marker sentence
+            prompt = prompt.replace(marker, marker + csv_section)
         else:
+            # Fallback: just append it at the end
             prompt += csv_section
-            
+
         return prompt
+
 
     def _clean_empty_sections(self, prompt: str) -> str:
         """Clean up any remaining empty sections or multiple newlines."""

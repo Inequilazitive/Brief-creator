@@ -1,4 +1,4 @@
-from transformers import pipeline
+from transformers import pipeline, LlavaNextProcessor, LlavaNextForConditionalGeneration
 from typing import List, Optional, Dict, Any
 import os
 from PIL import Image
@@ -9,28 +9,52 @@ from app.io import process_swipe_csv, prepare_reference_images, extract_image_ur
 
 class CreativeBriefGenerator:
     def __init__(self):
-        """Initialize the LLaVA model pipeline"""
+        """Initialize the vision-language model pipeline"""
         self.model_name = MODEL_NAME
         self.max_tokens = MAX_NEW_TOKENS
-        self.pipe = None
+        self.processor = None
+        self.model = None
         self._load_model()
     
     def _load_model(self):
-        """Load the LLaVA model pipeline"""
+        """Load the LLaVA model and processor"""
         try:
-            # Check if CUDA is available
             device = "cuda" if torch.cuda.is_available() else "cpu"
             print(f"Loading {self.model_name} on {device}...")
             
-            self.pipe = pipeline(
-                "image-text-to-text", 
-                model=self.model_name,
-                device=0 if device == "cuda" else -1,
-                torch_dtype=torch.float16 if device == "cuda" else torch.float32
+            # Load processor and model separately for better control
+            self.processor = LlavaNextProcessor.from_pretrained(self.model_name)
+            self.model = LlavaNextForConditionalGeneration.from_pretrained(
+                self.model_name,
+                torch_dtype=torch.float16 if device == "cuda" else torch.float32,
+                device_map="auto" if device == "cuda" else None,
+                low_cpu_mem_usage=True
             )
+            
+            if device == "cpu":
+                self.model = self.model.to(device)
+                
             print("Model loaded successfully!")
         except Exception as e:
             print(f"Error loading model: {e}")
+            # Fallback to a text-only model if vision model fails
+            self._load_fallback_model()
+    
+    def _load_fallback_model(self):
+        """Load a fallback text-only model if vision model fails"""
+        try:
+            print("Loading fallback text-generation model...")
+            self.pipe = pipeline(
+                "text-generation",
+                model="microsoft/DialoGPT-medium",
+                max_new_tokens=self.max_tokens,
+                do_sample=True,
+                temperature=0.7
+            )
+            self.model = None  # Signal that we're using fallback
+            print("Fallback model loaded successfully!")
+        except Exception as e:
+            print(f"Error loading fallback model: {e}")
             raise
 
     def generate_creative_briefs(
@@ -55,7 +79,7 @@ class CreativeBriefGenerator:
         **kwargs
     ) -> str:
         """
-        Generate creative briefs using LLaVA model with images and text.
+        Generate creative briefs using vision-language model with images and text.
         """
         
         # Process CSV data
@@ -90,41 +114,62 @@ class CreativeBriefGenerator:
         )
         
         # Generate briefs using the model
-        if reference_image_paths:
-            # Use the first image as primary reference (or combine multiple)
+        if reference_image_paths and self.model is not None:
+            # Use vision model with images
             return self._generate_with_images(text_prompt, reference_image_paths)
         else:
-            # Generate with text only (fallback)
+            # Use text-only generation (fallback or no images)
             return self._generate_text_only(text_prompt)
     
     def _generate_with_images(self, text_prompt: str, image_paths: List[str]) -> str:
         """Generate briefs using images and text with LLaVA"""
         try:
-            # Prepare messages for the model
-            # For now, use the first image as primary reference
-            # In a more advanced version, we could process multiple images
+            # Use the first image as primary reference
             primary_image_path = image_paths[0] if image_paths else None
             
             if not primary_image_path or not os.path.exists(primary_image_path):
                 return self._generate_text_only(text_prompt)
             
-            messages = [
+            # Load and process the image
+            image = Image.open(primary_image_path).convert('RGB')
+            
+            # Prepare the conversation format
+            conversation = [
                 {
                     "role": "user",
                     "content": [
-                        {"type": "image", "url": f"file://{os.path.abspath(primary_image_path)}"},
+                        {"type": "image"},
                         {"type": "text", "text": text_prompt}
                     ]
                 }
             ]
             
-            # Generate response
-            result = self.pipe(messages, max_new_tokens=self.max_tokens)
+            # Process inputs
+            prompt = self.processor.apply_chat_template(conversation, add_generation_prompt=True)
+            inputs = self.processor(images=image, text=prompt, return_tensors="pt")
             
-            if result and isinstance(result, list) and len(result) > 0:
-                return result[0].get('generated_text', 'Error: No text generated')
-            else:
-                return 'Error: Invalid response from model'
+            # Move to same device as model
+            if torch.cuda.is_available():
+                inputs = {k: v.to(self.model.device) for k, v in inputs.items()}
+            
+            # Generate response
+            with torch.no_grad():
+                output = self.model.generate(
+                    **inputs,
+                    max_new_tokens=self.max_tokens,
+                    do_sample=True,
+                    temperature=0.7,
+                    pad_token_id=self.processor.tokenizer.eos_token_id
+                )
+            
+            # Decode the response
+            generated_text = self.processor.decode(output[0], skip_special_tokens=True)
+            
+            # Extract only the new generated part
+            prompt_length = len(self.processor.decode(inputs['input_ids'][0], skip_special_tokens=True))
+            result = generated_text[prompt_length:].strip()
+            
+            return result if result else "Error: No response generated"
                 
         except Exception as e:
             print(f"Error generating with images: {e}")
@@ -133,22 +178,27 @@ class CreativeBriefGenerator:
     def _generate_text_only(self, text_prompt: str) -> str:
         """Fallback: Generate briefs using text only"""
         try:
-            # For text-only generation, we'll create a simple message
-            messages = [
-                {
-                    "role": "user", 
-                    "content": [
-                        {"type": "text", "text": text_prompt}
-                    ]
-                }
-            ]
-            
-            result = self.pipe(messages, max_new_tokens=self.max_tokens)
-            
-            if result and isinstance(result, list) and len(result) > 0:
-                return result[0].get('generated_text', 'Error: No text generated')
+            if hasattr(self, 'pipe'):  # Using fallback pipeline
+                result = self.pipe(text_prompt, max_new_tokens=self.max_tokens, num_return_sequences=1)
+                return result[0]['generated_text'] if result else "Error: No text generated"
             else:
-                return 'Error: Invalid response from model'
+                # Use the main model in text-only mode
+                inputs = self.processor(text=text_prompt, return_tensors="pt")
+                
+                if torch.cuda.is_available():
+                    inputs = {k: v.to(self.model.device) for k, v in inputs.items()}
+                
+                with torch.no_grad():
+                    output = self.model.generate(
+                        **inputs,
+                        max_new_tokens=self.max_tokens,
+                        do_sample=True,
+                        temperature=0.7,
+                        pad_token_id=self.processor.tokenizer.eos_token_id
+                    )
+                
+                generated_text = self.processor.decode(output[0], skip_special_tokens=True)
+                return generated_text.strip()
                 
         except Exception as e:
             print(f"Error in text-only generation: {e}")
