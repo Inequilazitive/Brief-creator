@@ -28,9 +28,9 @@ class CreativeBriefGenerator:
             self.model = LlavaForConditionalGeneration.from_pretrained(
                 self.model_name,
                 torch_dtype=torch.float16 if device == "cuda" else torch.float32,
-                device_map="auto" if device == "cuda" else None,
+                device_map="auto",
                 low_cpu_mem_usage=True
-            ).to(0)
+            )
             self.processor = AutoProcessor.from_pretrained(self.model_name)
             # if device == "cpu":
             #     self.model = self.model.to(device)                
