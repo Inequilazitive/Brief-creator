@@ -1,20 +1,20 @@
-# modal_app.py
-
 import modal
+from modal import mount
 
 # Define the app
 app = modal.App("creative-brief-generator")
 
-# Mount your current directory into the container
-volume_mount = modal.Mount.from_local_dir(".", remote_path="/root")
+# Mount your local code into the container
+volume_mount = mount.Mount.from_local_dir(".", remote_path="/root")
 
-# Build your image from requirements.txt
+# Image with dependencies
 image = (
     modal.Image.debian_slim(python_version="3.10")
     .pip_install_from_requirements("requirements.txt")
 )
 
-@app.function(image=image, mounts=[volume_mount], timeout=600, workdir="/root")
+# Run Gradio app
+@app.function(image=image, mounts=[volume_mount], workdir="/root", timeout=600)
 def run_gradio():
     import app.main
     app.main.main()
