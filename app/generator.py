@@ -32,9 +32,8 @@ class CreativeBriefGenerator:
                 low_cpu_mem_usage=True
             ).to(0)
             self.processor = AutoProcessor.from_pretrained(self.model_name)
-            if device == "cpu":
-                self.model = self.model.to(device)
-                
+            # if device == "cpu":
+            #     self.model = self.model.to(device)                
             print("Model loaded successfully!")
         except Exception as e:
             print(f"Error loading model: {e}")
@@ -155,18 +154,18 @@ class CreativeBriefGenerator:
             inputs = self.processor(images=image, text=prompt, return_tensors="pt").to(0, torch.float16)
             
             # Move to same device as model
-            if torch.cuda.is_available():
-                inputs = {k: v.to(self.model.device) for k, v in inputs.items()}
+            # if torch.cuda.is_available():
+            #     inputs = {k: v.to(self.model.device) for k, v in inputs.items()}
             
             # Generate response
-            with torch.no_grad():
-                output = self.model.generate(
-                    **inputs,
-                    max_new_tokens=self.max_tokens,
-                    do_sample=True,
-                    # temperature=0.7,
-                    # pad_token_id=self.processor.tokenizer.eos_token_id
-                )
+            # with torch.no_grad():
+            output = self.model.generate(
+                **inputs,
+                max_new_tokens=self.max_tokens,
+                do_sample=True,
+                # temperature=0.7,
+                # pad_token_id=self.processor.tokenizer.eos_token_id
+            )
             
             # Decode the response
             generated_text = self.processor.decode(output[0][2:], skip_special_tokens=True)
