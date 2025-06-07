@@ -138,6 +138,7 @@ class CreativeBriefGenerator:
             image = Image.open(primary_image_path).convert('RGB')
             
             # Prepare the conversation format
+            # Prepare the conversation format
             conversation = [
                 {
                     "role": "user",
@@ -147,15 +148,21 @@ class CreativeBriefGenerator:
                     ]
                 }
             ]
-            
-            print(f"Conversation for generation: {conversation}")
-            # Process inputs
+
+            # Apply chat template to get the prompt string
             prompt = self.processor.apply_chat_template(conversation, add_generation_prompt=True)
-            inputs = self.processor(images=image, text=prompt, return_tensors="pt").to(0, torch.float16)
-            
-            # Move to same device as model
+
+            # Now pass BOTH the image and the prompt together to the processor
+            inputs = self.processor(
+                text=prompt,
+                images=[image],  # Note: list of image(s)
+                return_tensors="pt"
+            )
+
+            # Move to appropriate device
             if torch.cuda.is_available():
-                inputs = {k: v.to(self.model.device) for k, v in inputs.items()}
+                inputs = {k: v.to(self.model.device, dtype=torch.float16) for k, v in inputs.items()}
+
             
             # Generate response
             with torch.no_grad():
