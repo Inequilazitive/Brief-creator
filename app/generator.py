@@ -36,7 +36,7 @@ class CreativeBriefGenerator:
             #     self.model = self.model.to(device)                
             print("Model loaded successfully!")
         except Exception as e:
-            print(f"Error loading model: {e}")
+            print(f"Error loading model: {e}")  
             # Fallback to a text-only model if vision model fails
             self._load_fallback_model()
     
