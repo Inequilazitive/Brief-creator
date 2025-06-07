@@ -6,6 +6,7 @@ import torch
 from app.config import MODEL_NAME, MAX_NEW_TOKENS
 from app.prompts import PromptBuilder
 from app.io import process_swipe_csv, prepare_reference_images, extract_image_urls_from_csv
+import traceback
 
 class CreativeBriefGenerator:
     def __init__(self):
@@ -177,6 +178,8 @@ class CreativeBriefGenerator:
                 
         except Exception as e:
             print(f"Error generating with images: {e}")
+            print("Traceback:")
+            print(traceback.format_exc())
             return f"Error during generation: {str(e)}"
     
     def _generate_text_only(self, text_prompt: str) -> str:
