@@ -150,7 +150,7 @@ class CreativeBriefGenerator:
             print(f"Conversation for generation: {conversation}")
             # Process inputs
             prompt = self.processor.apply_chat_template(conversation, add_generation_prompt=True)
-            inputs = self.processor(images=image, text=prompt, return_tensors="pt")
+            inputs = self.processor(images=image, text=prompt, return_tensors="pt").to(0, torch.float16)
             
             # Move to same device as model
             if torch.cuda.is_available():
