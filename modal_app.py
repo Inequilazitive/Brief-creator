@@ -11,7 +11,7 @@ image = (
 @app.function(
     image=image,
     timeout=600,
-    gpu="T4"  # ✅ request a GPU
+    gpu="L4"  # ✅ request a GPU
 )
 def run_gradio():
     import sys
