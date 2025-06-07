@@ -1,4 +1,4 @@
-from transformers import pipeline, LlavaNextProcessor, LlavaNextForConditionalGeneration
+from transformers import pipeline, LlavaNextProcessor, LlavaNextForConditionalGeneration, LlavaForConditionalGeneration, AutoProcessor
 from typing import List, Optional, Dict, Any
 import os
 from PIL import Image
@@ -24,14 +24,14 @@ class CreativeBriefGenerator:
             print(f"Loading {self.model_name} on {device}...")
             
             # Load processor and model separately for better control
-            self.processor = LlavaNextProcessor.from_pretrained(self.model_name)
-            self.model = LlavaNextForConditionalGeneration.from_pretrained(
+            
+            self.model = LlavaForConditionalGeneration.from_pretrained(
                 self.model_name,
                 torch_dtype=torch.float16 if device == "cuda" else torch.float32,
                 device_map="auto" if device == "cuda" else None,
                 low_cpu_mem_usage=True
-            )
-            
+            ).to(0)
+            self.processor = AutoProcessor.from_pretrained(self.model_name)
             if device == "cpu":
                 self.model = self.model.to(device)
                 
@@ -136,33 +136,27 @@ class CreativeBriefGenerator:
             
             # Load and process the image
             image = Image.open(primary_image_path).convert('RGB')
-            
-            # Prepare the conversation format
+            print(image)
             # Prepare the conversation format
             conversation = [
                 {
                     "role": "user",
                     "content": [
+                        {"type": "text", "text": text_prompt},
                         {"type": "image"},
-                        {"type": "text", "text": text_prompt}
-                    ]
-                }
+                    ],
+                },
             ]
-
-            # Apply chat template to get the prompt string
+            
+            print(f"Conversation for generation: {conversation}")
+            # Process inputs
             prompt = self.processor.apply_chat_template(conversation, add_generation_prompt=True)
-
-            # Now pass BOTH the image and the prompt together to the processor
-            inputs = self.processor(
-                text=prompt,
-                images=[image],  # Note: list of image(s)
-                return_tensors="pt"
-            )
-
-            # Move to appropriate device
+            print(f"Processed prompt: {prompt}")
+            inputs = self.processor(images=image, text=prompt, return_tensors="pt").to(0, torch.float16)
+            
+            # Move to same device as model
             if torch.cuda.is_available():
-                inputs = {k: v.to(self.model.device, dtype=torch.float16) for k, v in inputs.items()}
-
+                inputs = {k: v.to(self.model.device) for k, v in inputs.items()}
             
             # Generate response
             with torch.no_grad():
@@ -170,18 +164,18 @@ class CreativeBriefGenerator:
                     **inputs,
                     max_new_tokens=self.max_tokens,
                     do_sample=True,
-                    temperature=0.7,
-                    pad_token_id=self.processor.tokenizer.eos_token_id
+                    # temperature=0.7,
+                    # pad_token_id=self.processor.tokenizer.eos_token_id
                 )
             
             # Decode the response
-            generated_text = self.processor.decode(output[0], skip_special_tokens=True)
+            generated_text = self.processor.decode(output[0][2:], skip_special_tokens=True)
             
             # Extract only the new generated part
             prompt_length = len(self.processor.decode(inputs['input_ids'][0], skip_special_tokens=True))
             result = generated_text[prompt_length:].strip()
             
-            return result if result else "Error: No response generated"
+            return generated_text if generated_text else "Error: No response generated"
                 
         except Exception as e:
             print(f"Error generating with images: {e}")
