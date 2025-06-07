@@ -22,14 +22,12 @@ def build_ui(generate_callback):
             angle_and_benefits = gr.Textbox(label="Angle Summary with Benefits (Optional)", lines=3, placeholder="e.g., Azuna purifies air with plant-based technology...")
 
             gr.Markdown("### 🔤 Headlines")
-            headlines_df = gr.Dataframe(headers=["Headline 1", "Headline 2", "Headline 3"], row_count=1, col_count=3, label="Headline Examples")
-            auto_headlines = gr.Checkbox(label="Auto-generate Headlines", value=True)
-            regenerate_headlines_btn = gr.Button("🔁 Regenerate Headlines", visible=False)
+            generate_headlines_btn = gr.Button("🪄 Generate Headlines")
+            headlines_df = gr.Dataframe(headers=["Headline"], label="Headline Examples", interactive=True)
 
             gr.Markdown("### 🧾 Subheadlines")
-            subheadlines_df = gr.Dataframe(headers=["Subheadline 1", "Subheadline 2"], row_count=1, col_count=2, label="Subheadline Examples")
-            auto_subheadlines = gr.Checkbox(label="Auto-generate Subheadlines", value=True)
-            regenerate_subheadlines_btn = gr.Button("🔁 Regenerate Subheadlines", visible=False)
+            generate_subheadlines_btn = gr.Button("🪄 Generate Subheadlines")
+            subheadlines_df = gr.Dataframe(headers=["Subheadline"], label="Subheadline Examples", interactive=True)
 
             social_proof = gr.Textbox(label="Social Proof (Optional)", lines=2, placeholder="e.g., 10,000+ happy customers")
 
@@ -41,39 +39,23 @@ def build_ui(generate_callback):
             num_image_briefs = gr.Slider(label="Number of Static Briefs", minimum=1, maximum=20, value=10, step=1)
             num_video_briefs = gr.Slider(label="Number of Video Briefs", minimum=1, maximum=20, value=10, step=1)
 
-        generate_btn = gr.Button("🚀 Generate Prompt")
+        generate_btn = gr.Button("🚀 Generate Brief")
         output_markdown = gr.Markdown("### Prompt Output will appear here...")
 
-        # Auto-generate on checkbox
-        auto_headlines.change(
-            fn=lambda checked, brand, angle: (
-                gr.update(visible=True if checked else False),
-                generate_headlines(brand, angle) if checked and brand and angle else gr.update()
+        # Headline/Subheadline generation callbacks
+        generate_headlines_btn.click(
+            fn=lambda brand, angle: (
+                generate_headlines(brand, angle) if brand and angle else gr.update()
             ),
-            inputs=[auto_headlines, brand_name, angle_description],
-            outputs=[regenerate_headlines_btn, headlines_df],
-        )
-
-
-        auto_subheadlines.change(
-            fn=lambda checked, brand, angle: (
-                gr.update(visible=True if checked else False),
-                generate_subheadlines(brand, angle) if checked and brand and angle else gr.update()
-            ),
-            inputs=[auto_subheadlines, brand_name, angle_description],
-            outputs=[regenerate_subheadlines_btn, subheadlines_df],
-        )
-
-        # Regenerate buttons
-        regenerate_headlines_btn.click(
-            fn=lambda brand, angle, checkbox: generate_headlines(brand, angle) if checkbox and brand and angle else gr.update(),
-            inputs=[brand_name, angle_description, auto_headlines],
+            inputs=[brand_name, angle_description],
             outputs=headlines_df,
         )
 
-        regenerate_subheadlines_btn.click(
-            fn=lambda brand, angle, checkbox: generate_subheadlines(brand, angle) if checkbox and brand and angle else gr.update(),
-            inputs=[brand_name, angle_description, auto_subheadlines],
+        generate_subheadlines_btn.click(
+            fn=lambda brand, angle: (
+                generate_subheadlines(brand, angle) if brand and angle else gr.update()
+            ),
+            inputs=[brand_name, angle_description],
             outputs=subheadlines_df,
         )
 
@@ -84,8 +66,8 @@ def build_ui(generate_callback):
                 brand_name, product_name, website_url, target_audience, tone,
                 campaign_type, swipe_csv, reference_images,
                 angle_description, angle_and_benefits,
-                headlines_df, auto_headlines,
-                subheadlines_df, auto_subheadlines,
+                headlines_df, gr.State(True),  # always treat as auto_headlines = True
+                subheadlines_df, gr.State(True),  # always treat as auto_subheadlines = True
                 social_proof, voiceover_tone,
                 num_image_briefs, num_video_briefs,
                 brand_guide, campaign_deck, misc_assets

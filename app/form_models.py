@@ -1,34 +1,148 @@
 from transformers import pipeline
+import re
 
 # Use a more powerful model (make sure it's installed or use Hugging Face Inference API)
 generator = pipeline(
     "text-generation",
     model="tiiuae/falcon-rw-1b",
     tokenizer="tiiuae/falcon-rw-1b",
-    max_new_tokens=60,
+    max_new_tokens=150,  # Increased to get better responses
     temperature=0.7,
     do_sample=True,
+    pad_token_id=50256  # Add padding token to avoid warnings
 )
 
+def clean_generated_text(text, original_prompt):
+    """Clean the generated text by removing the original prompt and extracting relevant content."""
+    # Remove the original prompt from the generated text
+    if original_prompt in text:
+        text = text.replace(original_prompt, "").strip()
+    
+    # Split by newlines and filter out empty lines
+    lines = [line.strip() for line in text.split('\n') if line.strip()]
+    
+    # Extract lines that look like headlines (remove bullet points, numbers, etc.)
+    cleaned_lines = []
+    for line in lines:
+        # Remove common prefixes
+        line = re.sub(r'^[-•*]\s*', '', line)  # Remove bullet points
+        line = re.sub(r'^\d+\.\s*', '', line)  # Remove numbers
+        line = re.sub(r'^Headlines?:?\s*', '', line, flags=re.IGNORECASE)  # Remove "Headlines:" prefix
+        line = re.sub(r'^Subheadlines?:?\s*', '', line, flags=re.IGNORECASE)  # Remove "Subheadlines:" prefix
+        
+        if line and len(line) > 10:  # Only keep substantial content
+            cleaned_lines.append(line)
+    
+    return cleaned_lines
+
 def generate_headlines(brand_name, angle_description):
-    prompt = (
-        f"You are Professional professional content writer- Write 3 short and compelling Facebook ad headlines for the product '{brand_name}' "
-        f"based on this campaign angle: {angle_description}.Start each headline with a bullet point and ensure they are catchy and engaging.\n\n"
-    )
-    results = generator(prompt, num_return_sequences=3)
-    print(f"results: {results}")
-    headlines = [res["generated_text"].strip().split("\n")[0] for res in results]
-    print(f"headlines: {headlines}")
-    headlines = headlines[:3]
-    print(f"headlines after slicing: {headlines}")
-    return [[*headlines, *[""] * (3 - len(headlines))]]
+    """Generate headlines compatible with Gradio dataframe format."""
+    try:
+        if not brand_name or not angle_description:
+            return [["Please provide brand name and angle description"]]
+        
+        prompt = (
+            f"Generate 3 compelling Facebook ad headlines for '{brand_name}' "
+            f"based on this angle: {angle_description}\n\n"
+            f"Headlines:\n"
+            f"1. "
+        )
+        
+        print(f"Headlines prompt: {prompt}")
+        
+        # Generate text
+        result = generator(prompt, max_new_tokens=100, num_return_sequences=1)
+        generated_text = result[0]["generated_text"]
+        
+        print(f"Raw generated text: {generated_text}")
+        
+        # Clean and extract headlines
+        headlines = clean_generated_text(generated_text, prompt)
+        
+        print(f"Cleaned headlines: {headlines}")
+        
+        # Ensure we have exactly 3 headlines, pad with empty strings if needed
+        while len(headlines) < 3:
+            headlines.append("")
+        
+        # Take only first 3
+        headlines = headlines[:3]
+        
+        # Format for Gradio dataframe: each headline as a separate row
+        formatted_headlines = [[headline] for headline in headlines if headline]
+        
+        print(f"Formatted headlines: {formatted_headlines}")
+        
+        return formatted_headlines if formatted_headlines else [["No headlines generated"]]
+        
+    except Exception as e:
+        print(f"Error generating headlines: {e}")
+        return [["Error generating headlines. Please try again."]]
 
 def generate_subheadlines(brand_name, angle_description):
-    prompt = (
-        f"Write 2 persuasive subheadlines for Facebook ads for the product '{brand_name}', "
-        f"using this campaign angle: {angle_description}. Each subheadline should be 1 sentence explaining the benefit."
-    )
-    results = generator(prompt, num_return_sequences=2)
-    subheadlines = [res["generated_text"].strip().split("\n")[0] for res in results]
-    subheadlines = subheadlines[:2]
-    return [[*subheadlines, *[""] * (2 - len(subheadlines))]]
+    """Generate subheadlines compatible with Gradio dataframe format."""
+    try:
+        if not brand_name or not angle_description:
+            return [["Please provide brand name and angle description"]]
+        
+        prompt = (
+            f"Generate 2 persuasive Facebook ad subheadlines for '{brand_name}' "
+            f"based on this angle: {angle_description}\n\n"
+            f"Subheadlines:\n"
+            f"1. "
+        )
+        
+        print(f"Subheadlines prompt: {prompt}")
+        
+        # Generate text
+        result = generator(prompt, max_new_tokens=100, num_return_sequences=1)
+        generated_text = result[0]["generated_text"]
+        
+        print(f"Raw generated text: {generated_text}")
+        
+        # Clean and extract subheadlines
+        subheadlines = clean_generated_text(generated_text, prompt)
+        
+        print(f"Cleaned subheadlines: {subheadlines}")
+        
+        # Ensure we have exactly 2 subheadlines, pad with empty strings if needed
+        while len(subheadlines) < 2:
+            subheadlines.append("")
+        
+        # Take only first 2
+        subheadlines = subheadlines[:2]
+        
+        # Format for Gradio dataframe: each subheadline as a separate row
+        formatted_subheadlines = [[subheadline] for subheadline in subheadlines if subheadline]
+        
+        print(f"Formatted subheadlines: {formatted_subheadlines}")
+        
+        return formatted_subheadlines if formatted_subheadlines else [["No subheadlines generated"]]
+        
+    except Exception as e:
+        print(f"Error generating subheadlines: {e}")
+        return [["Error generating subheadlines. Please try again."]]
+
+# Alternative implementation using a more direct approach
+def generate_headlines_simple(brand_name, angle_description):
+    """Simplified version that returns hardcoded examples if model fails."""
+    try:
+        return generate_headlines(brand_name, angle_description)
+    except:
+        # Fallback to example headlines
+        return [
+            [f"Transform Your Space with {brand_name}"],
+            [f"Discover the Power of {brand_name}"],
+            [f"Why {brand_name} is Different"]
+        ]
+
+def generate_subheadlines_simple(brand_name, angle_description):
+    """Simplified version that returns hardcoded examples if model fails."""
+    try:
+        return generate_subheadlines(brand_name, angle_description)
+    except:
+        # Fallback to example subheadlines
+        return [
+            [f"Experience the benefits of {brand_name} today"],
+            [f"Join thousands who trust {brand_name}"]
+        ]

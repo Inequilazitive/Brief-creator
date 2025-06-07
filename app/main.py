@@ -8,14 +8,11 @@ from app.ui import build_ui
 import traceback
 
 def process_dataframe_input(df_data):
-    """Convert Gradio dataframe input to list format"""
-    if df_data is None or len(df_data) == 0:
+    """Convert Gradio dataframe input (Pandas DataFrame) to list"""
+    if df_data is None or df_data.empty:
         return None
-    
-    # Extract the first row of data (flatten nested lists if needed)
-    row_data = df_data[0] if isinstance(df_data[0], list) else df_data
-    # Filter out empty strings and None values
-    return [item for item in row_data if item and str(item).strip()]
+    return df_data.iloc[:, 0].dropna().astype(str).str.strip().tolist()
+
 
 def generate_brief_callback(
     brand_name, product_name, website_url, target_audience, tone,
