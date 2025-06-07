@@ -10,7 +10,7 @@ image = (
     .add_local_dir(".", remote_path="/root")  # Your code will live in /root
 )
 
-@app.function(image=image, timeout=120000)
+@app.function(image=image, timeout=86400)
 def run_gradio():
     import sys
     sys.path.append("/root")  # ✅ Add your project to Python path
