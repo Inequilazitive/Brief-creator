@@ -16,8 +16,11 @@ def generate_headlines(brand_name, angle_description):
         f"based on this campaign angle: {angle_description}."
     )
     results = generator(prompt, num_return_sequences=3)
+    print(f"results: {results}")
     headlines = [res["generated_text"].strip().split("\n")[0] for res in results]
+    print(f"headlines: {headlines}")
     headlines = headlines[:3]
+    print(f"headlines after slicing: {headlines}")
     return [[*headlines, *[""] * (3 - len(headlines))]]
 
 def generate_subheadlines(brand_name, angle_description):
