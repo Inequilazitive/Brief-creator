@@ -12,8 +12,8 @@ generator = pipeline(
 
 def generate_headlines(brand_name, angle_description):
     prompt = (
-        f"Write 3 short and compelling Facebook ad headlines for the product '{brand_name}' "
-        f"based on this campaign angle: {angle_description}."
+        f"You are Professional professional content writer- Write 3 short and compelling Facebook ad headlines for the product '{brand_name}' "
+        f"based on this campaign angle: {angle_description}.Start each headline with a bullet point and ensure they are catchy and engaging.\n\n"
     )
     results = generator(prompt, num_return_sequences=3)
     print(f"results: {results}")

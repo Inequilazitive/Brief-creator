@@ -116,6 +116,7 @@ class CreativeBriefGenerator:
         # Generate briefs using the model
         if reference_image_paths and self.model is not None:
             # Use vision model with images
+            print(f"Generating briefs with images: {reference_image_paths}")
             return self._generate_with_images(text_prompt, reference_image_paths)
         else:
             # Use text-only generation (fallback or no images)
@@ -127,6 +128,8 @@ class CreativeBriefGenerator:
             # Use the first image as primary reference
             primary_image_path = image_paths[0] if image_paths else None
             
+            print(f"Primary image path: {primary_image_path}")
+            print(f"Text prompt: {text_prompt}")
             if not primary_image_path or not os.path.exists(primary_image_path):
                 return self._generate_text_only(text_prompt)
             
@@ -144,6 +147,7 @@ class CreativeBriefGenerator:
                 }
             ]
             
+            print(f"Conversation for generation: {conversation}")
             # Process inputs
             prompt = self.processor.apply_chat_template(conversation, add_generation_prompt=True)
             inputs = self.processor(images=image, text=prompt, return_tensors="pt")

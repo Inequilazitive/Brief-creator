@@ -5,6 +5,7 @@ from app.generator import get_generator
 from app.io import parse_csv_file
 from app.config import EVERGREEN_TEMPLATE_PATH, PROMO_TEMPLATE_PATH
 from app.ui import build_ui
+import traceback
 
 def process_dataframe_input(df_data):
     """Convert Gradio dataframe input to list format"""
@@ -92,7 +93,8 @@ def generate_brief_callback(
         
     except Exception as e:
         error_msg = f"❌ **Error during generation**: {str(e)}"
-        print(f"Generation error: {e}")
+        print("Generation error:")
+        traceback.print_exc()  # Prints the full traceback to stderr
         return error_msg
 
 def main():
