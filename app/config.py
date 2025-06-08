@@ -28,8 +28,8 @@ NUM_STATICS = 10
 NUM_VIDEOS = 10
 
 # === Model Configuration ===
-MODEL_NAME = "llava-hf/llava-1.5-7b-hf"
-MAX_NEW_TOKENS = 2000
+MODEL_NAME = "HuggingFaceTB/SmolVLM-Instruct"
+MAX_NEW_TOKENS = 1200
 
 # === Ensure folders exist on startup ===
 for folder in [UPLOADS_DIR, PROCESSED_DIR, BRAND_GUIDES_DIR, BRIEFS_DIR, PDF_DIR, ZIP_DIR]:

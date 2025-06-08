@@ -1,4 +1,4 @@
-from transformers import pipeline, LlavaNextProcessor, LlavaNextForConditionalGeneration, LlavaForConditionalGeneration, AutoProcessor
+from transformers import pipeline, LlavaForConditionalGeneration, AutoProcessor, AutoModelForVision2Seq
 from typing import List, Optional, Dict, Any
 import os
 from PIL import Image
@@ -24,12 +24,12 @@ class CreativeBriefGenerator:
             print(f"Loading {self.model_name} on {device}...")
             
             # Load processor and model separately for better control
-            
-            self.model = LlavaForConditionalGeneration.from_pretrained(
+            DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
+            self.model = AutoModelForVision2Seq.from_pretrained(
                 self.model_name,
-                torch_dtype=torch.float16 if device == "cuda" else torch.float32,
+                torch_dtype=torch.bfloat16,
                 device_map="auto",
-                low_cpu_mem_usage=True
+                _attn_implementation="flash_attention_2" if DEVICE == "cuda" else "eager"
             )
             self.processor = AutoProcessor.from_pretrained(self.model_name)
             # if device == "cpu":
@@ -126,6 +126,7 @@ class CreativeBriefGenerator:
         """Generate briefs using images and text with LLaVA"""
         try:
             # Use the first image as primary reference
+            DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
             primary_image_path = image_paths[0] if image_paths else None
             
             print(f"Primary image path: {primary_image_path}")
@@ -141,8 +142,8 @@ class CreativeBriefGenerator:
                 {
                     "role": "user",
                     "content": [
-                        {"type": "text", "text": text_prompt},
                         {"type": "image"},
+                        {"type": "text", "text": text_prompt},
                     ],
                 },
             ]
@@ -151,7 +152,7 @@ class CreativeBriefGenerator:
             # Process inputs
             prompt = self.processor.apply_chat_template(conversation, add_generation_prompt=True)
             print(f"Processed prompt: {prompt}")
-            inputs = self.processor(images=image, text=prompt, return_tensors="pt").to(0, torch.float16)
+            inputs = self.processor(images=[image], text=prompt, return_tensors="pt").to(DEVICE)
             
             # Move to same device as model
             # if torch.cuda.is_available():
@@ -162,19 +163,19 @@ class CreativeBriefGenerator:
             output = self.model.generate(
                 **inputs,
                 max_new_tokens=self.max_tokens,
-                do_sample=True,
+                #do_sample=True,
                 # temperature=0.7,
                 # pad_token_id=self.processor.tokenizer.eos_token_id
             )
             
             # Decode the response
-            generated_text = self.processor.decode(output[0][2:], skip_special_tokens=True)
+            generated_text = self.processor.decode(output, skip_special_tokens=True)
             
             # Extract only the new generated part
             prompt_length = len(self.processor.decode(inputs['input_ids'][0], skip_special_tokens=True))
             result = generated_text[prompt_length:].strip()
             
-            return generated_text if generated_text else "Error: No response generated"
+            return generated_text[0] if generated_text else "Error: No response generated"
                 
         except Exception as e:
             print(f"Error generating with images: {e}")
