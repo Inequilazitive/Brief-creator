@@ -25,3 +25,61 @@ Social Proof Points (# of customers, PR logos, or very notable PR quotes, any ot
 Content Bank - Please limit your visual recommendations to the following types of content, and anything that deviates from this list must only be very realistically accessible stock images/videos: (list all “categories” of product contents you have, examples below):
 
 
+AI Prompt Output/Response Format for Creative Briefs:
+Concept Name: 
+Format: (Static Image or Video)
+Reference File: (Name the image or video script template from the Reference Menu image/spreadsheet are you basing this concept on)
+
+For Image Concepts:
+Contents Position Description: (referencing the Content Requirements Per Variant column for the corresponding concept in the Reference Menu spreadsheet, look at the number of headlines, subheadline explainers, benefits pain points, social proof points and product/lifestyle visuals, and identify where they are positioned in the corresponding concept in the Reference Menu image attached. Describe this so the graphic designer has completely certainty where to put the contents in the image).
+Headline Version 1: [referencing the Content Requirements per Variant column for the corresponding, and the Content Bank list for the corresponding BRAND and ANGLE, provide an answer to each space. If the concept does not require one of the content pieces below, say N/A. For example, if the concept only requires 1 headline and 1 product image, mark them “N/A” for all the Benefits, Pain Poins, Social Proof Points, Lifestyle Images etc., and do not even list the “N/A” fields in your output.]
+Headline Version 2: [if applicable]
+Headline Version 3: [if applicable]
+Subheadline Explainer: [if applicable]
+Benefit 1:  [if applicable]
+Benefit 2: [if applicable]
+Benefit 3:  [if applicable]
+Pain Point 1:  [if applicable]
+Pain Point 2:  [if applicable]
+Pain Point 3: [if applicable]
+Social Proof Point:  [if applicable]
+Product Image: [if applicable]
+Lifestyle Image:  [if applicable]
+Color Palette Description: [describe what color the background should be, noting the branding on the brand’s website, what color the text should be in various parts, and what color any other details should be]
+
+Example of Image Concept Brief Output Format (where brand is Demon Destroyer Supplements):
+Concept Name: Benefit Point-Out Image: Product Center
+Format: Static Image
+Reference File: Benefit Point-Out Image: Product Center
+Contents Position Description: Headline on top, product image in center, 3 benefits on the left, 2 benefits on the right, with icons representing each benefit
+Headline Version 1: The Benefits of Demon Destroyer Supplements
+Headline Version 2: Creatine + Nootropic Gummies
+Headline Version 3: Crush your demons with delicious gummies
+Benefit 1: Mental Focus to Crush Goals
+Benefit 2: Easy to Take, Delicious Gummy
+Benefit 3: Amazing Mood
+Benefit 4: Strength to Crush Workouts
+Benefit 5: Obstacles Crushed, Demons Conquered
+Color Palette Description: please use a white background with a red headline text and black benefit text, and the icons accompanying each benefit should be red
+
+For Video Concepts:
+List the template name
+Write the copy of the video script template line by line, following the template instructions
+Parenthesize what visuals and text you want for each line in the script, only selecting visuals from the Content Bank description section of the prompt
+For the voiceover, we’re always using AI Voiceovers, so please provide what tone of voice you want the voiceover to be in and we can make whatever that is. Maybe mention a celebrity whose voice you want it to sound like.
+
+Video Concept Brief Example (for Demon Destroyer creatine/nootropic gummies):
+Reference File: Triple Pain Point Hook Script Template
+Line 1 (Hook): Are you tired of being a weak loser?
+Visual for Line 1: Stock clip of someone being a loser
+Line 2: Not hitting your work goals?
+Visual for Line 2: Stock clip of someone getting yelled at by their boss
+Line 3: Not hitting your fitness goals?
+Visual for Line 3: Stock clip of a fat person feeling their fat belly, sad
+Line 4: Introducing “F*cking Unstoppable”, the creatine gummy with nootropics
+Visual for Line 4: Closeup of the product bottle
+Line 5: this lets you crush all of your workouts with ease, and focus to perform well at work
+Visual for Line 5: someone working out, then cut to someone getting paid, all stock video
+Line 6: Tap the link below to kickstart your life
+Visual for Line 6: Screen recording of someone adding the product to cart on the website
+Voiceover: sound deep and strong, similar to Thanos’s voice from MCU

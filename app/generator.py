@@ -1,4 +1,5 @@
 from transformers import pipeline, LlavaForConditionalGeneration, AutoProcessor, AutoModelForVision2Seq
+from transformers.image_utils import load_image
 from typing import List, Optional, Dict, Any
 import os
 from PIL import Image
@@ -28,9 +29,9 @@ class CreativeBriefGenerator:
             self.model = AutoModelForVision2Seq.from_pretrained(
                 self.model_name,
                 torch_dtype=torch.bfloat16,
-                device_map="auto",
+                #device_map="auto",
                 _attn_implementation="flash_attention_2" if DEVICE == "cuda" else "eager"
-            )
+            ).to(DEVICE)
             self.processor = AutoProcessor.from_pretrained(self.model_name)
             # if device == "cpu":
             #     self.model = self.model.to(device)                
@@ -135,7 +136,7 @@ class CreativeBriefGenerator:
                 return self._generate_text_only(text_prompt)
             
             # Load and process the image
-            image = Image.open(primary_image_path).convert('RGB')
+            image = load_image(primary_image_path)
             print(image)
             # Prepare the conversation format
             conversation = [
@@ -169,7 +170,7 @@ class CreativeBriefGenerator:
             )
             
             # Decode the response
-            generated_text = self.processor.decode(output, skip_special_tokens=True)
+            generated_text = self.processor.batch_decode(output, skip_special_tokens=True)
             
             # Extract only the new generated part
             prompt_length = len(self.processor.decode(inputs['input_ids'][0], skip_special_tokens=True))
