@@ -28,7 +28,7 @@ class CreativeBriefGenerator:
             DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
             self.model = AutoModelForVision2Seq.from_pretrained(
                 self.model_name,
-                torch_dtype=torch.bfloat16,
+                torch_dtype=torch.float16,
                 #device_map="auto",
                 _attn_implementation="flash_attention_2" if DEVICE == "cuda" else "eager"
             ).to(DEVICE)
