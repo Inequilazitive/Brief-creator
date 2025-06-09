@@ -116,7 +116,7 @@ class CreativeBriefGenerator:
             )
             
             # Decode the response
-            generated_text = self.processor.batch_decode(output, skip_special_tokens=True)[0]
+            generated_text = self.vlm_processor.batch_decode(output, skip_special_tokens=True)[0]
             
             print(f"Generated description: {generated_text}")
             
