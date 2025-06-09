@@ -12,7 +12,7 @@ def build_ui(generate_callback):
             target_audience = gr.Text(label="Target Audience (Optional)", placeholder="e.g., New moms, pet owners", interactive=True)
             voiceover_tone = gr.Text(label="Voiceover Tone (Optional)", placeholder="e.g., Calm and friendly", interactive=True)
             tone = gr.Text(label="Brand Tone or Style", placeholder="e.g., Clean, natural, friendly", interactive=True)
-
+            content_bank = gr.Text(label="Content Bank (Optional)", placeholder="e.g., Previous ad copy, brand messaging", interactive=True)
         with gr.Accordion("📌 Angle + Content Input", open=True):
             campaign_type = gr.Radio(["Evergreen", "Promo"], label="Campaign Type")
             swipe_csv = gr.File(label="Upload Swipe CSV", file_types=[".csv"])
@@ -64,7 +64,7 @@ def build_ui(generate_callback):
             generate_callback,
             inputs=[
                 brand_name, product_name, website_url, target_audience, tone,
-                campaign_type, swipe_csv, reference_images,
+                content_bank, campaign_type, swipe_csv, reference_images,
                 angle_description, angle_and_benefits,
                 headlines_df, gr.State(True),  # always treat as auto_headlines = True
                 subheadlines_df, gr.State(True),  # always treat as auto_subheadlines = True

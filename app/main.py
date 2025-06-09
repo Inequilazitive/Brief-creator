@@ -16,7 +16,7 @@ def process_dataframe_input(df_data):
 
 def generate_brief_callback(
     brand_name, product_name, website_url, target_audience, tone,
-    campaign_type, swipe_csv, reference_images,
+    content_bank, campaign_type, swipe_csv, reference_images,
     angle_description, angle_and_benefits,
     headlines_df, auto_headlines,
     subheadlines_df, auto_subheadlines,
@@ -69,7 +69,8 @@ def generate_brief_callback(
             social_proof=[social_proof] if social_proof else None,
             angle_and_benefits=angle_and_benefits,
             num_image_briefs=int(num_image_briefs),
-            num_video_briefs=int(num_video_briefs)
+            num_video_briefs=int(num_video_briefs),
+            content_bank=content_bank or "",
         )
         
         # Save the result to file

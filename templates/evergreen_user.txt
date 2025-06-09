@@ -17,11 +17,35 @@ Subheadline/Explainer Options (often Explainer type lines):
 {subheadline_options}
 Product Benefits:
 {benefits_list}
-Social Proof Points:
+Social Proof Points (# of customers, PR logos, or very notable PR quotes, any other social proof points)
 {social_proof_points}
-Content Bank (Available Visuals):
+Content Bank - Please limit your visual recommendations to the following types of content, and anything that deviates from this list must only be very realistically accessible stock images/videos:
 {content_bank_description}
 Reference Materials:
 Attached Image Description: {reference_image_description}
 
-Please create the requested advertisement briefs now based on the above information about the brand.
+Please create the requested advertisement briefs now based on the above information about the brand, FYI these are the output rules for your reference again, you need to stick to these rules for each brief you create.
+
+Output Rules:
+
+IMAGE BRIEFS
+For each image brief, output:
+- Concept Name
+- Format: Static Image
+- Reference File Name (from the Reference Menu)
+- Contents Position Description – detailed layout for graphic designer
+- 3 Headline Variants (from provided headline options)
+- Supporting Text Sections (subheadlines, benefits, pain points, social proof – pick appropriately)
+- Selected Visuals (product/lifestyle/iconography/etc from the Content Bank)
+- Color Palette Description
+
+VIDEO BRIEFS
+For each video brief, output:
+- Reference File Name (from the Reference Menu)
+- Line-by-line script, each with:
+  - Text (Voiceover)  
+  - Visual Description (from Content Bank only)  
+- Voiceover Style/Tone – include 1–2 celebrity voice references if possible (e.g., “calm and inspiring like Morgan Freeman”, or “hype, energetic like Kevin Hart”)  
+- Maintain a cohesive, flowing storyline.
+
+---
