@@ -27,12 +27,15 @@ def clean_generated_text(text, original_prompt):
         # Match: ###SubheadlineX: subheadline text
         hash_match = re.search(r'^#+Subheadline\d*:\s*(.+)', line, re.IGNORECASE)
         hash_headline_match = re.search(r'^#+Headline\d*:\s*(.+)', line, re.IGNORECASE)
+        hash_headline_match2= re.search(r'^#+\s*Headline\s*\d*\.\s*(.+)', line, re.IGNORECASE)
         if bold_match:
             subheadlines.append(bold_match.group(1).strip())
         elif hash_match:
             subheadlines.append(hash_match.group(1).strip())
         elif hash_headline_match:
             subheadlines.append(hash_headline_match.group(1).strip())
+        elif hash_headline_match2:
+            subheadlines.append(hash_headline_match2.group(1).strip())
     return subheadlines
 
 
