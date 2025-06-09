@@ -67,7 +67,7 @@ class CreativeBriefGenerator:
                 model="microsoft/DialoGPT-medium",
                 max_new_tokens=self.max_tokens,
                 do_sample=True,
-                temperature=0.7
+                temperature=0.4
             )
             self.model = None  # Signal that we're using fallback
             print("Fallback model loaded successfully!")

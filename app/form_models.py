@@ -1,12 +1,11 @@
-from transformers import pipeline, AutoTokenizer, AutoModelForCausalLM
+from transformers import pipeline, AutoTokenizer, AutoModelForCausalLM, pipeline, set_seed
+
 import re
 import torch
 # Use a more powerful model (make sure it's installed or use Hugging Face Inference API)
-tokenizer=AutoTokenizer.from_pretrained("tiiuae/falcon-rw-1b")
 generator = pipeline(
     "text-generation",
-    model="tiiuae/falcon-rw-1b",
-    tokenizer=tokenizer,
+    model="google/gemma-3-1b-it",
     torch_dtype=torch.bfloat16,
     device_map="auto"
 )
@@ -44,20 +43,32 @@ def generate_headlines(brand_name, angle_description):
             f"Generate 3 compelling Facebook ad headlines for '{brand_name}' "
             f"based on this angle: {angle_description}\n\n"
             f"Headlines:\n"
-            f"1. "
         )
         
-        print(f"Headlines prompt: {prompt}")
+        messages= [
+            [
+                {
+                "role": "system",
+                "content": "You are a professional writer specializing in creating engaging and engaging headlines for advertisements. Your task is to generate compelling headlines for given brands in the tone specified that capture attention and drive clicks."
+                },
+                {
+                "role": "user",
+                "content": prompt
+                },
+            ],
+        ]
+        
+        #print(f"Headlines prompt: {prompt}")
         
         # Generate text
-        result = generator(prompt, max_length=500, do_sample=True, top_k=10, num_return_sequences=1,eos_token_id=tokenizer.eos_token_id)
-        
-        generated_text = result[0]["generated_text"]
-        
-        print(f"Raw generated text: {generated_text}")
+        #result = generator(prompt, max_length=500, do_sample=True, top_k=10, num_return_sequences=1,eos_token_id=tokenizer.eos_token_id)
+        result=generator(messages, max_new_tokens=500)
+        #generated_text = result[0]["generated_text"]
+        print('result for headlines:', result)
+        #print(f"Raw generated text: {generated_text}")
         
         # Clean and extract headlines
-        headlines = clean_generated_text(generated_text, prompt)
+        headlines = clean_generated_text(result, prompt)
         
         print(f"Cleaned headlines: {headlines}")
         
@@ -83,22 +94,35 @@ def generate_subheadlines(brand_name, angle_description):
             return [["Please provide brand name and angle description"]]
         
         prompt = (
-            f"Generate 2 persuasive Facebook ad subheadlines for '{brand_name}' "
+            f"Generate persuasive Facebook ad subheadlines for '{brand_name}' "
             f"based on this angle: {angle_description}\n\n"
             f"Subheadlines:\n"
             f"1. "
         )
         
-        print(f"Subheadlines prompt: {prompt}")
+        subheadlines_messages= [
+            [
+                {
+                "role": "system",
+                "content": "You are a professional writer specializing in creating engaging and engaging headlines for advertisements. Your task is to generate compelling subheadlines for given brands in the tone specified that capture attention and drive clicks."
+                },
+                {
+                "role": "user",
+                "content": prompt
+                },
+            ],
+        ]
+        result=generator(subheadlines_messages, max_new_tokens=600)
+        #print(f"Subheadlines prompt: {prompt}")
         
         # Generate text
-        result = generator(prompt, max_length=500, do_sample=True, top_k=10, num_return_sequences=1,eos_token_id=tokenizer.eos_token_id)
-        generated_text = result[0]["generated_text"]
+        #result = generator(prompt, max_length=500, do_sample=True, top_k=10, num_return_sequences=1,eos_token_id=tokenizer.eos_token_id)
+        #generated_text = result[0]["generated_text"]
         
-        print(f"Raw generated text: {generated_text}")
+        print(f"Raw generated text: {result}")
         
         # Clean and extract subheadlines
-        subheadlines = clean_generated_text(generated_text, prompt)
+        subheadlines = clean_generated_text(result, prompt)
         
         print(f"Cleaned subheadlines: {subheadlines}")
         

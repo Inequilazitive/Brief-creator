@@ -29,4 +29,4 @@ For videos, ensure script lines flow naturally and organically
 All visual recommendations must be limited to the Content Bank or realistic stock content
 Follow the exact output format for each brief type
 
-Please create the requested advertisement briefs now.
+Please create the requested advertisement briefs now based on the above information about the brand.
