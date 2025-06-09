@@ -32,7 +32,7 @@ NUM_VIDEOS = 10
 # === Model Configuration ===
 VLM_MODEL_NAME = "HuggingFaceTB/SmolVLM-Instruct"
 LLM_MODEL_NAME = "meta-llama/Llama-3.2-1B-Instruct"
-MAX_NEW_TOKENS = 1200   
+MAX_NEW_TOKENS = 5000   
 
 # === Ensure folders exist on startup ===
 for folder in [UPLOADS_DIR, PROCESSED_DIR, BRAND_GUIDES_DIR, BRIEFS_DIR, PDF_DIR, ZIP_DIR]:

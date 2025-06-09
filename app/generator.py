@@ -207,12 +207,14 @@ class CreativeBriefGenerator:
                 llm_message,
                 max_new_tokens=self.max_tokens,
             )
+            print("Generated output brief:", output_brief)
             
+            print(f"clened output brief", output_brief[0]["generated_text"][-1])
             # Extract only the new generated part
             #prompt_length = len(self.processor.decode(inputs['input_ids'][0], skip_special_tokens=True))
             #result = generated_text[prompt_length:].strip()
             
-            return output_brief[0]["generated_text"][-1] if output_brief else "Error: No response generated"
+            return output_brief[0]["generated_text"][-1]['content'] if output_brief else "Error: No response generated"
                 
         except Exception as e:
             print(f"Error generating with images: {e}")
