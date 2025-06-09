@@ -34,7 +34,7 @@ class CreativeBriefGenerator:
                 #device_map="auto",
                 #_attn_implementation="flash_attention_2" if DEVICE == "cuda" else "eager"
             ).to(DEVICE)
-            self.vlm_processor = AutoProcessor.from_pretrained(self.model_name)
+            self.vlm_processor = AutoProcessor.from_pretrained(self.vlm_model_name)
             # if device == "cpu":
             #     self.model = self.model.to(device)                
             print("VLM Model loaded successfully!")
