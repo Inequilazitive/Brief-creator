@@ -4,7 +4,7 @@ from typing import List, Optional, Dict, Any
 import os
 from PIL import Image
 import torch
-from app.config import MODEL_NAME, MAX_NEW_TOKENS
+from app.config import VLM_MODEL_NAME, LLM_MODEL_NAME, MAX_NEW_TOKENS
 from app.prompts import PromptBuilder
 from app.io import process_swipe_csv, prepare_reference_images, extract_image_urls_from_csv
 import traceback
@@ -12,9 +12,11 @@ import traceback
 class CreativeBriefGenerator:
     def __init__(self):
         """Initialize the vision-language model pipeline"""
-        self.model_name = MODEL_NAME
+        self.vlm_model_name = VLM_MODEL_NAME
+        self.llm_model_name = LLM_MODEL_NAME
+        self.llm_pipe = None
         self.max_tokens = MAX_NEW_TOKENS
-        self.processor = None
+        self.vlm_processor = None
         self.model = None
         self._load_model()
     
@@ -22,20 +24,35 @@ class CreativeBriefGenerator:
         """Load the LLaVA model and processor"""
         try:
             device = "cuda" if torch.cuda.is_available() else "cpu"
-            print(f"Loading {self.model_name} on {device}...")
+            print(f"Loading {self.vlm_model_name} on {device}...")
             
             # Load processor and model separately for better control
             DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
-            self.model = AutoModelForVision2Seq.from_pretrained(
-                self.model_name,
+            self.vlm_model = AutoModelForVision2Seq.from_pretrained(
+                self.vlm_model_name,
                 torch_dtype=torch.float16,
                 #device_map="auto",
                 _attn_implementation="flash_attention_2" if DEVICE == "cuda" else "eager"
             ).to(DEVICE)
-            self.processor = AutoProcessor.from_pretrained(self.model_name)
+            self.vlm_processor = AutoProcessor.from_pretrained(self.model_name)
             # if device == "cpu":
             #     self.model = self.model.to(device)                
-            print("Model loaded successfully!")
+            print("VLM Model loaded successfully!")
+        except Exception as e:
+            print(f"Error loading model: {e}")  
+            # Fallback to a text-only model if vision model fails
+            self._load_fallback_model()
+            
+        try:
+            print(f"Loading {self.llm_model_name} for text generation...")
+            self.llm_pipe = pipeline(
+                "text-generation",
+                model=self.llm_model_name,
+                max_new_tokens=self.max_tokens,
+                do_sample=True,
+                temperature=0.5
+            )
+            print("Text generation model loaded successfully!")
         except Exception as e:
             print(f"Error loading model: {e}")  
             # Fallback to a text-only model if vision model fails
@@ -57,6 +74,60 @@ class CreativeBriefGenerator:
         except Exception as e:
             print(f"Error loading fallback model: {e}")
             raise
+        
+    def _get_image_description(self, image_paths: str) -> str:
+        try:
+            # Use the first image as primary reference
+            DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
+            primary_image_path = image_paths[0] if image_paths else None
+            print(f"Primary image path: {primary_image_path}")            
+            # Load and process the image
+            image = load_image(primary_image_path)
+            print(image)
+            # Prepare the conversation format
+            conversation = [
+                {
+                    "role": "user",
+                    "content": [
+                        {"type": "image"},
+                        {"type": "text", "text": "Give the description of this image in detail, including any relevant context or information that can help in generating a creative brief."},
+                    ],
+                },
+            ]
+            
+            print(f"Conversation for generation: {conversation}")
+            # Process inputs
+            prompt = self.vlm_processor.apply_chat_template(conversation, add_generation_prompt=True)
+            print(f"Processed prompt: {prompt}")
+            inputs = self.vlm_processor(images=[image], text=prompt, return_tensors="pt").to(DEVICE)
+            
+            # Move to same device as model
+            # if torch.cuda.is_available():
+            #     inputs = {k: v.to(self.model.device) for k, v in inputs.items()}
+            
+            # Generate response
+            # with torch.no_grad():
+            output = self.model.generate(
+                **inputs,
+                max_new_tokens=300,
+                #do_sample=True,
+                # temperature=0.7,
+                # pad_token_id=self.processor.tokenizer.eos_token_id
+            )
+            
+            # Decode the response
+            generated_text = self.processor.batch_decode(output, skip_special_tokens=True)[0]
+            
+            print(f"Generated description: {generated_text}")
+            
+            return generated_text.strip()
+        
+        except Exception as e:
+            print(f"Error generating image description: {e}")
+            print("Traceback:")
+            print(traceback.format_exc())
+            return "Error generating image description"
+        
 
     def generate_creative_briefs(
         self,
@@ -66,7 +137,8 @@ class CreativeBriefGenerator:
         target_audience: str,
         tone: str,
         angle_description: str,
-        template_path: str,
+        user_template_path: str,
+        system_template_path: str,
         csv_df=None,
         uploaded_images=None,
         headlines: Optional[List[str]] = None,
@@ -93,10 +165,10 @@ class CreativeBriefGenerator:
             reference_image_paths = prepare_reference_images(uploaded_images, csv_image_urls)
         elif uploaded_images:
             reference_image_paths = prepare_reference_images(uploaded_images, [])
-        
+        image_description = self._get_image_description(reference_image_paths) if reference_image_paths else ""
         # Build the text prompt
-        prompt_builder = PromptBuilder(template_path)
-        text_prompt = prompt_builder.build_prompt(
+        prompt_builder = PromptBuilder(user_template_path)
+        user_text_prompt = prompt_builder.build_prompt(
             brand_name=brand_name,
             product_name=product_name,
             website_url=website_url,
@@ -111,72 +183,39 @@ class CreativeBriefGenerator:
             angle_and_benefits=angle_and_benefits,
             num_image_briefs=num_image_briefs,
             num_video_briefs=num_video_briefs,
-            csv_data=csv_text
+            csv_data=csv_text,
+            reference_image_description=image_description
         )
         
         # Generate briefs using the model
         if reference_image_paths and self.model is not None:
             # Use vision model with images
             print(f"Generating briefs with images: {reference_image_paths}")
-            return self._generate_with_images(text_prompt, reference_image_paths)
+            return self._generate_with_images(user_text_prompt, system_template_path, reference_image_paths)
         else:
             # Use text-only generation (fallback or no images)
-            return self._generate_text_only(text_prompt)
+            return self._generate_text_only(user_text_prompt)
     
-    def _generate_with_images(self, text_prompt: str, image_paths: List[str]) -> str:
+    
+    
+    def _generate_with_images(self, user_text_prompt: str,sys_text_prompt: str, image_paths: List[str]) -> str:
         """Generate briefs using images and text with LLaVA"""
         try:
-            # Use the first image as primary reference
-            DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
-            primary_image_path = image_paths[0] if image_paths else None
             
-            print(f"Primary image path: {primary_image_path}")
-            print(f"Text prompt: {text_prompt}")
-            if not primary_image_path or not os.path.exists(primary_image_path):
-                return self._generate_text_only(text_prompt)
-            
-            # Load and process the image
-            image = load_image(primary_image_path)
-            print(image)
-            # Prepare the conversation format
-            conversation = [
-                {
-                    "role": "user",
-                    "content": [
-                        {"type": "image"},
-                        {"type": "text", "text": text_prompt},
-                    ],
-                },
+            llm_message =  [
+                {"role": "system", "content": sys_text_prompt},
+                {"role": "user", "content": user_text_prompt},
             ]
-            
-            print(f"Conversation for generation: {conversation}")
-            # Process inputs
-            prompt = self.processor.apply_chat_template(conversation, add_generation_prompt=True)
-            print(f"Processed prompt: {prompt}")
-            inputs = self.processor(images=[image], text=prompt, return_tensors="pt").to(DEVICE)
-            
-            # Move to same device as model
-            # if torch.cuda.is_available():
-            #     inputs = {k: v.to(self.model.device) for k, v in inputs.items()}
-            
-            # Generate response
-            # with torch.no_grad():
-            output = self.model.generate(
-                **inputs,
+            output_brief = self.llm_pipe(
+                llm_message,
                 max_new_tokens=self.max_tokens,
-                #do_sample=True,
-                # temperature=0.7,
-                # pad_token_id=self.processor.tokenizer.eos_token_id
             )
             
-            # Decode the response
-            generated_text = self.processor.batch_decode(output, skip_special_tokens=True)
-            
             # Extract only the new generated part
-            prompt_length = len(self.processor.decode(inputs['input_ids'][0], skip_special_tokens=True))
-            result = generated_text[prompt_length:].strip()
+            #prompt_length = len(self.processor.decode(inputs['input_ids'][0], skip_special_tokens=True))
+            #result = generated_text[prompt_length:].strip()
             
-            return generated_text[0] if generated_text else "Error: No response generated"
+            return output_brief[0]["generated_text"][-1] if output_brief else "Error: No response generated"
                 
         except Exception as e:
             print(f"Error generating with images: {e}")

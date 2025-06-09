@@ -1,0 +1,32 @@
+Create {num_image_briefs} Image briefs and {num_video_briefs} Video briefs for Meta ads in 1x1 format.
+Brand Information:
+
+Brand: {brand_name}
+Website: {website_url}
+Product: {product_name}
+Target Audience: {target_audience}
+Marketing Angle: {tone}, {angle_and_benefits}
+
+Content Options:
+Offer Headlines:
+{offer_headline_options}
+Headlines:
+{headline_options}
+Subheadlines/Explainers:
+{subheadline_options}
+Product Benefits:
+{benefits_list}
+Social Proof Points:
+{social_proof_points}
+Content Bank (Available Visuals):
+{content_bank_description}
+Reference Materials:
+Reference Menu Description: {reference_image_description}
+Instructions:
+
+You may reuse the same reference concept multiple times with different variations (different visuals, headlines, or focus on different benefits/pain points)
+For videos, ensure script lines flow naturally and organically
+All visual recommendations must be limited to the Content Bank or realistic stock content
+Follow the exact output format for each brief type
+
+Please create the requested briefs now.

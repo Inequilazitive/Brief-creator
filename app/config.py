@@ -17,6 +17,8 @@ ZIP_DIR = OUTPUTS_DIR / "zip"
 
 # === Template files ===
 EVERGREEN_TEMPLATE_PATH = TEMPLATES_DIR / "evergreen_template.txt"
+EVERGREEN_SYSTEM_PROMPT_PATH = TEMPLATES_DIR / "evergreen_system.txt"
+EVERGREEN_USER_PROMPT_PATH = TEMPLATES_DIR / "evergreen_user.txt"
 PROMO_TEMPLATE_PATH = TEMPLATES_DIR / "promo_template.txt"
 
 # === Output file naming ===
@@ -28,8 +30,9 @@ NUM_STATICS = 10
 NUM_VIDEOS = 10
 
 # === Model Configuration ===
-MODEL_NAME = "HuggingFaceTB/SmolVLM-Instruct"
-MAX_NEW_TOKENS = 1200
+VLM_MODEL_NAME = "HuggingFaceTB/SmolVLM-Instruct"
+LLM_MODEL_NAME = "meta-llama/Llama-3.2-3B-Instruct"
+MAX_NEW_TOKENS = 1200   
 
 # === Ensure folders exist on startup ===
 for folder in [UPLOADS_DIR, PROCESSED_DIR, BRAND_GUIDES_DIR, BRIEFS_DIR, PDF_DIR, ZIP_DIR]:

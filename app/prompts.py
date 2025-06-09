@@ -32,7 +32,8 @@ class PromptBuilder:
         angle_and_benefits: Optional[str] = None,
         num_image_briefs: int = 10,
         num_video_briefs: int = 10,
-        csv_data: Optional[str] = None
+        csv_data: Optional[str] = None,
+        reference_image_description: Optional[str] = None,
     ) -> str:
         """
         Build the complete prompt by formatting the template and removing unavailable sections.
@@ -50,6 +51,7 @@ class PromptBuilder:
             'num_image_briefs': num_image_briefs,
             'num_video_briefs': num_video_briefs,
             'angle_and_benefits': angle_and_benefits if angle_and_benefits else '',
+            'reference_image_description': reference_image_description if reference_image_description else '',
         })
 
         # Format list sections

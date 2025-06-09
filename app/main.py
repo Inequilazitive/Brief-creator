@@ -3,7 +3,7 @@ import pandas as pd
 from pathlib import Path
 from app.generator import get_generator
 from app.io import parse_csv_file
-from app.config import EVERGREEN_TEMPLATE_PATH, PROMO_TEMPLATE_PATH
+from app.config import EVERGREEN_TEMPLATE_PATH, PROMO_TEMPLATE_PATH, EVERGREEN_SYSTEM_PROMPT_PATH, EVERGREEN_USER_PROMPT_PATH
 from app.ui import build_ui
 import traceback
 
@@ -43,7 +43,7 @@ def generate_brief_callback(
         subheadlines = process_dataframe_input(subheadlines_df) if auto_subheadlines else None
         
         # Determine template path based on campaign type
-        template_path = EVERGREEN_TEMPLATE_PATH if campaign_type == "Evergreen" else PROMO_TEMPLATE_PATH
+        template_path = EVERGREEN_USER_PROMPT_PATH if campaign_type == "Evergreen" else PROMO_TEMPLATE_PATH
         
         # Check if template exists
         if not Path(template_path).exists():
@@ -60,7 +60,8 @@ def generate_brief_callback(
             target_audience=target_audience or "",
             tone=tone or "",
             angle_description=angle_description,
-            template_path=str(template_path),
+            user_template_path= EVERGREEN_SYSTEM_PROMPT_PATH,
+            system_template_path=EVERGREEN_USER_PROMPT_PATH,
             csv_df=csv_df,
             uploaded_images=reference_images,
             headlines=headlines,
