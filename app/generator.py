@@ -89,7 +89,7 @@ class CreativeBriefGenerator:
                     "role": "user",
                     "content": [
                         {"type": "image"},
-                        {"type": "text", "text": "Give the description of this image in detail, including any relevant context or information that can help in generating a creative brief."},
+                        {"type": "text", "text": "Give a brief 5-10 line description of this image, including any relevant context or information that can help in generating a creative brief."},
                     ],
                 },
             ]
