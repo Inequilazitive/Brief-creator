@@ -57,44 +57,46 @@ def generate_headlines(brand_name, angle_description):
             f"Headlines:\n"
         )
         
-        messages= [
+        messages = [
             [
                 {
-                "role": "system",
-                "content": [{"type": "text", "text": "You are a professional writer specializing in creating engaging and engaging headlines for advertisements. Your task is to generate compelling headlines for given brands in the tone specified that capture attention and drive clicks. You will give the response like ###Headline 1. <Headline>, ### Headline 2. <Headline> and no explanations, just the headlines one by one."},]
+                    "role": "system",
+                    "content": "You are a professional writer specializing in creating engaging and engaging headlines for advertisements. Your task is to generate compelling headlines for given brands in the tone specified that capture attention and drive clicks. You will give the response like ###Headline 1. <Headline>, ### Headline 2. <Headline> and no explanations, just the headlines one by one."
                 },
                 {
-                "role": "user",
-                "content": [{"type": "text", "text": prompt},]
+                    "role": "user",
+                    "content": prompt
                 },
             ],
         ]
         
-        #print(f"Headlines prompt: {prompt}")
-        
-        # Generate text
-        #result = generator(prompt, max_length=500, do_sample=True, top_k=10, num_return_sequences=1,eos_token_id=tokenizer.eos_token_id)
-        result=generator(messages, max_new_tokens=500)
-        result=result[0][0]['generated_text'][-1]['content']
-        #generated_text = result[0]["generated_text"]
-        print('result for headlines:', result)
-        #print(f"Raw generated text: {generated_text}")
-        
-        # Clean and extract headlines
-        headlines = clean_generated_text(result, prompt)
-        
-        print(f"Cleaned headlines: {headlines}")
-        
-        # Ensure we have exactly 3 headlines, pad with empty strings if needed
-        # Take only first 3
-        headlines = headlines[:3]
-        
-        # Format for Gradio dataframe: each headline as a separate row
-        formatted_headlines = [[headline] for headline in headlines if headline]
-        
-        print(f"Formatted headlines: {formatted_headlines}")
-        
-        return formatted_headlines if formatted_headlines else [["No headlines generated"]]
+        retries = 3
+        for attempt in range(retries):
+            try:
+                # Generate text
+                result = generator(messages, max_new_tokens=500)
+                result = result[0][0]['generated_text'][-1]['content']
+                
+                print('Result for headlines:', result)
+                
+                # Clean and extract headlines
+                headlines = clean_generated_text(result, prompt)
+                
+                print(f"Cleaned headlines: {headlines}")
+                
+                # Ensure we have exactly 3 headlines, pad with empty strings if needed
+                headlines = headlines[:3]
+                
+                # Format for Gradio dataframe: each headline as a separate row
+                formatted_headlines = [[headline] for headline in headlines if headline]
+                
+                print(f"Formatted headlines: {formatted_headlines}")
+                
+                return formatted_headlines if formatted_headlines else [["No headlines generated"]]
+            except Exception as e:
+                print(f"Attempt {attempt + 1} failed: {e}")
+                if attempt == retries - 1:
+                    raise
         
     except Exception as e:
         print(f"Error generating headlines: {e}")
@@ -113,44 +115,46 @@ def generate_subheadlines(brand_name, angle_description):
             f"1. "
         )
         
-        subheadlines_messages= [
+        subheadlines_messages = [
             [
                 {
-                "role": "system",
-                "content": "You are a professional writer specializing in creating engaging and engaging headlines for advertisements. Your task is to generate compelling subheadlines for given brands in the tone specified that capture attention and drive clicks.You will give the response like ###SubHeadline 1. <SubHeadline>, ###SubHeadline 2. <SubHeadline> and no explanations, just the headlines one by one."
+                    "role": "system",
+                    "content": "You are a professional writer specializing in creating engaging and engaging headlines for advertisements. Your task is to generate compelling subheadlines for given brands in the tone specified that capture attention and drive clicks. You will give the response like ###SubHeadline 1. <SubHeadline>, ###SubHeadline 2. <SubHeadline> and no explanations, just the headlines one by one."
                 },
                 {
-                "role": "user",
-                "content": prompt
+                    "role": "user",
+                    "content": prompt
                 },
             ],
         ]
-        result=generator(subheadlines_messages, max_new_tokens=600)
-        result=result[0][0]['generated_text'][-1]['content']
-        #print(f"Subheadlines prompt: {prompt}")
         
-        # Generate text
-        #result = generator(prompt, max_length=500, do_sample=True, top_k=10, num_return_sequences=1,eos_token_id=tokenizer.eos_token_id)
-        #generated_text = result[0]["generated_text"]
-        
-        print(f"Raw generated text: {result}")
-        
-        # Clean and extract subheadlines
-        subheadlines = clean_generated_text(result, prompt)
-        
-        print(f"Cleaned subheadlines: {subheadlines}")
-        
-        # Ensure we have exactly 2 subheadlines, pad with empty strings if needed
-        
-        # Take only first 2
-        subheadlines = subheadlines[:3]
-        
-        # Format for Gradio dataframe: each subheadline as a separate row
-        formatted_subheadlines = [[subheadline] for subheadline in subheadlines if subheadline]
-        
-        print(f"Formatted subheadlines: {formatted_subheadlines}")
-        
-        return formatted_subheadlines if formatted_subheadlines else [["No subheadlines generated"]]
+        retries = 3
+        for attempt in range(retries):
+            try:
+                # Generate text
+                result = generator(subheadlines_messages, max_new_tokens=600)
+                result = result[0][0]['generated_text'][-1]['content']
+                
+                print(f"Raw generated text: {result}")
+                
+                # Clean and extract subheadlines
+                subheadlines = clean_generated_text(result, prompt)
+                
+                print(f"Cleaned subheadlines: {subheadlines}")
+                
+                # Ensure we have exactly 2 subheadlines, pad with empty strings if needed
+                subheadlines = subheadlines[:3]
+                
+                # Format for Gradio dataframe: each subheadline as a separate row
+                formatted_subheadlines = [[subheadline] for subheadline in subheadlines if subheadline]
+                
+                print(f"Formatted subheadlines: {formatted_subheadlines}")
+                
+                return formatted_subheadlines if formatted_subheadlines else [["No subheadlines generated"]]
+            except Exception as e:
+                print(f"Attempt {attempt + 1} failed: {e}")
+                if attempt == retries - 1:
+                    raise
         
     except Exception as e:
         print(f"Error generating subheadlines: {e}")
