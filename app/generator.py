@@ -77,14 +77,13 @@ class CreativeBriefGenerator:
         
     def _get_image_description(self, image_paths: str) -> str:
         try:
-            # Use the first image as primary reference
             DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
             primary_image_path = image_paths[0] if image_paths else None
             print(f"Primary image path: {primary_image_path}")            
-            # Load and process the image
+            
             image = load_image(primary_image_path)
             print(image)
-            # Prepare the conversation format
+
             conversation = [
                 {
                     "role": "user",
@@ -94,33 +93,31 @@ class CreativeBriefGenerator:
                     ],
                 },
             ]
-            
-            print(f"Conversation for generation: {conversation}")
-            # Process inputs
+
             prompt = self.vlm_processor.apply_chat_template(conversation, add_generation_prompt=True)
             print(f"Processed prompt: {prompt}")
+            
             inputs = self.vlm_processor(images=[image], text=prompt, return_tensors="pt").to(DEVICE)
-            
-            # Move to same device as model
-            # if torch.cuda.is_available():
-            #     inputs = {k: v.to(self.model.device) for k, v in inputs.items()}
-            
-            # Generate response
-            # with torch.no_grad():
+
             output = self.vlm_model.generate(
                 **inputs,
-                max_new_tokens=300,
-                #do_sample=True,
-                # temperature=0.7,
-                # pad_token_id=self.processor.tokenizer.eos_token_id
+                max_new_tokens=1000,
             )
-            
-            # Decode the response
+
             generated_text = self.vlm_processor.batch_decode(output, skip_special_tokens=True)[0]
-            
             print(f"Generated description: {generated_text}")
-            
-            return generated_text.strip()
+
+            # Clean up: strip any user/assistant role text
+            if "Assistant:" in generated_text:
+                # Only keep the text after "Assistant:"
+                generated_text = generated_text.split("Assistant:", 1)[-1].strip()
+
+            return generated_text
+
+        except Exception as e:
+            print(f"Error in generating image description: {e}")
+            return "Failed to generate image description."
+
         
         except Exception as e:
             print(f"Error generating image description: {e}")
