@@ -11,6 +11,7 @@ image = (
 @app.function(
     image=image,
     timeout=6000,
+    secrets=[modal.Secret.from_name("huggingface-secret")],
     gpu="L4"  # ✅ request a GPU
 )
 def run_gradio():
