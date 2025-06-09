@@ -6,8 +6,8 @@ import torch
 generator = pipeline(
     "text-generation",
     model="google/gemma-3-1b-it",
+    device="cuda",
     torch_dtype=torch.bfloat16,
-    device_map="auto"
 )
 
 def clean_generated_text(text, original_prompt):
@@ -49,11 +49,11 @@ def generate_headlines(brand_name, angle_description):
             [
                 {
                 "role": "system",
-                "content": "You are a professional writer specializing in creating engaging and engaging headlines for advertisements. Your task is to generate compelling headlines for given brands in the tone specified that capture attention and drive clicks."
+                "content": [{"type": "text", "text": "You are a professional writer specializing in creating engaging and engaging headlines for advertisements. Your task is to generate compelling headlines for given brands in the tone specified that capture attention and drive clicks."},]
                 },
                 {
                 "role": "user",
-                "content": prompt
+                "content": [{"type": "text", "text": prompt},]
                 },
             ],
         ]
