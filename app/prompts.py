@@ -33,6 +33,7 @@ class PromptBuilder:
         num_image_briefs: int = 10,
         num_video_briefs: int = 10,
         csv_data: Optional[str] = None,
+        offer_headline_options: str = '',
         reference_image_description: Optional[str] = None,
     ) -> str:
         """
@@ -52,6 +53,7 @@ class PromptBuilder:
             'num_video_briefs': num_video_briefs,
             'angle_and_benefits': angle_and_benefits if angle_and_benefits else '',
             'reference_image_description': reference_image_description if reference_image_description else '',
+            'offer_headline_options': offer_headline_options if offer_headline_options else '',
         })
 
         # Format list sections
@@ -63,8 +65,8 @@ class PromptBuilder:
         prompt = self._format_content_bank_section(prompt, content_bank)
 
         # Add CSV data if provided
-        if csv_data:
-            prompt = self._add_csv_data_section(prompt, csv_data)
+        # if csv_data:
+        #     prompt = self._add_csv_data_section(prompt, csv_data)
 
         # Clean up any remaining placeholder sections
         prompt = self._clean_empty_sections(prompt)

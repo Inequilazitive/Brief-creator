@@ -10,28 +10,31 @@ generator = pipeline(
     torch_dtype=torch.bfloat16,
 )
 
+import re
+
 def clean_generated_text(text, original_prompt):
-    """Clean the generated text by removing the original prompt and extracting relevant content."""
-    # Remove the original prompt from the generated text
+    """Extract actual subheadline text from generated content, including markdown-style and bolded formats."""
     if original_prompt in text:
         text = text.replace(original_prompt, "").strip()
-    
-    # Split by newlines and filter out empty lines
+
     lines = [line.strip() for line in text.split('\n') if line.strip()]
-    
-    # Extract lines that look like headlines (remove bullet points, numbers, etc.)
-    cleaned_lines = []
+    subheadlines = []
+
     for line in lines:
-        # Remove common prefixes
-        #line = re.sub(r'^[-•*]\s*', '', line)  # Remove bullet points
-        #line = re.sub(r'^\d+\.\s*', '', line)  # Remove numbers
-        line = re.sub(r'^Headlines?:?\s*', '', line, flags=re.IGNORECASE)  # Remove "Headlines:" prefix
-        line = re.sub(r'^Subheadlines?:?\s*', '', line, flags=re.IGNORECASE)  # Remove "Subheadlines:" prefix
-        
-        if line and len(line) > 0:  # Only keep substantial content
-            cleaned_lines.append(line)
-    
-    return cleaned_lines
+        # Match: * **subheadline text**
+        bold_match = re.search(r'\*\*\s*(.*?)\s*\*\*', line)
+
+        # Match: ###SubheadlineX: subheadline text
+        hash_match = re.search(r'^#+Subheadline\d*:\s*(.+)', line, re.IGNORECASE)
+        hash_headline_match = re.search(r'^#+Headline\d*:\s*(.+)', line, re.IGNORECASE)
+        if bold_match:
+            subheadlines.append(bold_match.group(1).strip())
+        elif hash_match:
+            subheadlines.append(hash_match.group(1).strip())
+        elif hash_headline_match:
+            subheadlines.append(hash_headline_match.group(1).strip())
+    return subheadlines
+
 
 def generate_headlines(brand_name, angle_description):
     """Generate headlines compatible with Gradio dataframe format."""
@@ -49,7 +52,7 @@ def generate_headlines(brand_name, angle_description):
             [
                 {
                 "role": "system",
-                "content": [{"type": "text", "text": "You are a professional writer specializing in creating engaging and engaging headlines for advertisements. Your task is to generate compelling headlines for given brands in the tone specified that capture attention and drive clicks."},]
+                "content": [{"type": "text", "text": "You are a professional writer specializing in creating engaging and engaging headlines for advertisements. Your task is to generate compelling headlines for given brands in the tone specified that capture attention and drive clicks. You will give the response like ###Headline 1. <Headline>, ### Headline 2. <Headline> and no explanations, just the headlines one by one."},]
                 },
                 {
                 "role": "user",
@@ -63,6 +66,7 @@ def generate_headlines(brand_name, angle_description):
         # Generate text
         #result = generator(prompt, max_length=500, do_sample=True, top_k=10, num_return_sequences=1,eos_token_id=tokenizer.eos_token_id)
         result=generator(messages, max_new_tokens=500)
+        result=result[0][0]['generated_text'][-1]['content']
         #generated_text = result[0]["generated_text"]
         print('result for headlines:', result)
         #print(f"Raw generated text: {generated_text}")
@@ -104,7 +108,7 @@ def generate_subheadlines(brand_name, angle_description):
             [
                 {
                 "role": "system",
-                "content": "You are a professional writer specializing in creating engaging and engaging headlines for advertisements. Your task is to generate compelling subheadlines for given brands in the tone specified that capture attention and drive clicks."
+                "content": "You are a professional writer specializing in creating engaging and engaging headlines for advertisements. Your task is to generate compelling subheadlines for given brands in the tone specified that capture attention and drive clicks.You will give the response like ###SubHeadline 1. <SubHeadline>, ###SubHeadline 2. <SubHeadline> and no explanations, just the headlines one by one."
                 },
                 {
                 "role": "user",
@@ -113,6 +117,7 @@ def generate_subheadlines(brand_name, angle_description):
             ],
         ]
         result=generator(subheadlines_messages, max_new_tokens=600)
+        result=result[0][0]['generated_text'][-1]['content']
         #print(f"Subheadlines prompt: {prompt}")
         
         # Generate text

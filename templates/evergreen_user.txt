@@ -11,9 +11,9 @@ Marketing Angle: {tone}, {angle_and_benefits}
 Content Options:
 Offer Headlines:
 {offer_headline_options}
-Headlines:
+Headlines Options:
 {headline_options}
-Subheadlines/Explainers:
+Subheadline/Explainer Options (often Explainer type lines):
 {subheadline_options}
 Product Benefits:
 {benefits_list}
