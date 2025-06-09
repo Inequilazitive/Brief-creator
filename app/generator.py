@@ -188,7 +188,7 @@ class CreativeBriefGenerator:
         )
         
         # Generate briefs using the model
-        if reference_image_paths and self.model is not None:
+        if reference_image_paths and self.llm_model is not None:
             # Use vision model with images
             print(f"Generating briefs with images: {reference_image_paths}")
             return self._generate_with_images(user_text_prompt, system_template_path, reference_image_paths)
