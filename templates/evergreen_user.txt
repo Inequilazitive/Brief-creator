@@ -1,4 +1,5 @@
 Create {num_image_briefs} Image briefs and {num_video_briefs} Video briefs for Meta ads as instructed.
+
 Brand Information:
 
 Brand: {brand_name}
@@ -21,12 +22,6 @@ Social Proof Points:
 Content Bank (Available Visuals):
 {content_bank_description}
 Reference Materials:
-Reference Image Description: {reference_image_description}
-Instructions:
-
-You may reuse the same reference concept multiple times with different variations (different visuals, headlines, or focus on different benefits/pain points)
-For videos, ensure script lines flow naturally and organically
-All visual recommendations must be limited to the Content Bank or realistic stock content
-Follow the exact output format for each brief type
+Attached Image Description: {reference_image_description}
 
 Please create the requested advertisement briefs now based on the above information about the brand.

@@ -203,6 +203,7 @@ class CreativeBriefGenerator:
                 {"role": "system", "content": sys_text_prompt},
                 {"role": "user", "content": user_text_prompt},
             ]
+            print(f'Final user prompt: {user_text_prompt}')
             output_brief = self.llm_pipe(
                 llm_message,
                 max_new_tokens=self.max_tokens,
