@@ -1,4 +1,4 @@
-Create {num_image_briefs} Image briefs and {num_video_briefs} Video briefs for Meta ads in 1x1 format.
+Create {num_image_briefs} Image briefs and {num_video_briefs} Video briefs for Meta ads as instructed.
 Brand Information:
 
 Brand: {brand_name}
@@ -29,4 +29,4 @@ For videos, ensure script lines flow naturally and organically
 All visual recommendations must be limited to the Content Bank or realistic stock content
 Follow the exact output format for each brief type
 
-Please create the requested briefs now.
+Please create the requested advertisement briefs now.
