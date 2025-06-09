@@ -107,7 +107,7 @@ class CreativeBriefGenerator:
             
             # Generate response
             # with torch.no_grad():
-            output = self.model.generate(
+            output = self.vlm_model.generate(
                 **inputs,
                 max_new_tokens=300,
                 #do_sample=True,
