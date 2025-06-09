@@ -1,15 +1,14 @@
-from transformers import pipeline
+from transformers import pipeline, AutoTokenizer, AutoModelForCausalLM
 import re
-
+import torch
 # Use a more powerful model (make sure it's installed or use Hugging Face Inference API)
+tokenizer=AutoTokenizer.from_pretrained("tiiuae/falcon-rw-1b")
 generator = pipeline(
     "text-generation",
     model="tiiuae/falcon-rw-1b",
-    tokenizer="tiiuae/falcon-rw-1b",
-    max_new_tokens=150,  # Increased to get better responses
-    temperature=0.7,
-    do_sample=True,
-    pad_token_id=50256  # Add padding token to avoid warnings
+    tokenizer=tokenizer,
+    torch_dtype=torch.bfloat16,
+    device_map="auto"
 )
 
 def clean_generated_text(text, original_prompt):
@@ -25,12 +24,12 @@ def clean_generated_text(text, original_prompt):
     cleaned_lines = []
     for line in lines:
         # Remove common prefixes
-        line = re.sub(r'^[-•*]\s*', '', line)  # Remove bullet points
-        line = re.sub(r'^\d+\.\s*', '', line)  # Remove numbers
+        #line = re.sub(r'^[-•*]\s*', '', line)  # Remove bullet points
+        #line = re.sub(r'^\d+\.\s*', '', line)  # Remove numbers
         line = re.sub(r'^Headlines?:?\s*', '', line, flags=re.IGNORECASE)  # Remove "Headlines:" prefix
         line = re.sub(r'^Subheadlines?:?\s*', '', line, flags=re.IGNORECASE)  # Remove "Subheadlines:" prefix
         
-        if line and len(line) > 10:  # Only keep substantial content
+        if line and len(line) > 0:  # Only keep substantial content
             cleaned_lines.append(line)
     
     return cleaned_lines
@@ -51,7 +50,8 @@ def generate_headlines(brand_name, angle_description):
         print(f"Headlines prompt: {prompt}")
         
         # Generate text
-        result = generator(prompt, max_new_tokens=100, num_return_sequences=1)
+        result = generator(prompt, max_length=500, do_sample=True, top_k=10, num_return_sequences=1,eos_token_id=tokenizer.eos_token_id)
+        
         generated_text = result[0]["generated_text"]
         
         print(f"Raw generated text: {generated_text}")
@@ -62,9 +62,6 @@ def generate_headlines(brand_name, angle_description):
         print(f"Cleaned headlines: {headlines}")
         
         # Ensure we have exactly 3 headlines, pad with empty strings if needed
-        while len(headlines) < 3:
-            headlines.append("")
-        
         # Take only first 3
         headlines = headlines[:3]
         
@@ -95,7 +92,7 @@ def generate_subheadlines(brand_name, angle_description):
         print(f"Subheadlines prompt: {prompt}")
         
         # Generate text
-        result = generator(prompt, max_new_tokens=100, num_return_sequences=1)
+        result = generator(prompt, max_length=500, do_sample=True, top_k=10, num_return_sequences=1,eos_token_id=tokenizer.eos_token_id)
         generated_text = result[0]["generated_text"]
         
         print(f"Raw generated text: {generated_text}")
@@ -106,11 +103,9 @@ def generate_subheadlines(brand_name, angle_description):
         print(f"Cleaned subheadlines: {subheadlines}")
         
         # Ensure we have exactly 2 subheadlines, pad with empty strings if needed
-        while len(subheadlines) < 2:
-            subheadlines.append("")
         
         # Take only first 2
-        subheadlines = subheadlines[:2]
+        subheadlines = subheadlines[:3]
         
         # Format for Gradio dataframe: each subheadline as a separate row
         formatted_subheadlines = [[subheadline] for subheadline in subheadlines if subheadline]
