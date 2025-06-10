@@ -85,6 +85,7 @@ Voiceover Style: Strong, motivational, like Thanos from the MCU
 
  Key Reminders:
 - Follow the brief format strictly — no generic lists of headlines/benefits outside the brief.
+- The video script should be detailed and should give the linewise and visual wise output similar to the example above
 - Do not return summaries or unordered options. Each brief must be fully structured.
 - Reuse concepts only with variation.
 - You must produce exactly the number of image briefs and video briefs as asked. 

@@ -6,7 +6,7 @@ from app.io import parse_csv_file
 from app.config import EVERGREEN_TEMPLATE_PATH, PROMO_TEMPLATE_PATH, EVERGREEN_SYSTEM_PROMPT_PATH, EVERGREEN_USER_PROMPT_PATH
 from app.ui import build_ui
 import traceback
-
+import re
 def process_dataframe_input(df_data):
     """Convert Gradio dataframe input (Pandas DataFrame) to list"""
     if df_data is None or df_data.empty:
@@ -49,6 +49,9 @@ def generate_brief_callback(
         if not Path(template_path).exists():
             return f"❌ **Error**: Template file not found at {template_path}. Please create the template file."
         
+        
+        content_bank= [i.strip() for i in re.split(r'[;,]', content_bank) if i.strip()]
+
         # Get generator instance
         generator = get_generator()
         

@@ -24,28 +24,43 @@ Content Bank - Please limit your visual recommendations to the following types o
 Reference Materials:
 Attached Image Description: {reference_image_description}
 
-Please create the requested advertisement briefs now based on the above information about the brand, FYI these are the output rules for your reference again, you need to stick to these rules for each brief you create.
-
-Output Rules:
-
-IMAGE BRIEFS
-For each image brief, output:
-- Concept Name
-- Format: Static Image
-- Reference File Name (from the Reference Menu)
-- Contents Position Description – detailed layout for graphic designer
-- 3 Headline Variants (from provided headline options)
-- Supporting Text Sections (subheadlines, benefits, pain points, social proof – pick appropriately)
-- Selected Visuals (product/lifestyle/iconography/etc from the Content Bank)
-- Color Palette Description
-
-VIDEO BRIEFS
-For each video brief, output:
-- Reference File Name (from the Reference Menu)
-- Line-by-line script, each with:
-  - Text (Voiceover)  
-  - Visual Description (from Content Bank only)  
-- Voiceover Style/Tone – include 1–2 celebrity voice references if possible (e.g., “calm and inspiring like Morgan Freeman”, or “hype, energetic like Kevin Hart”)  
-- Maintain a cohesive, flowing storyline.
+Please create the requested advertisement briefs now based on the above information about the brand, FYI these are the EXAMPLES JUST FOR REFERENCE (DO NOT USE OR COPY PASTE THEM) for your reference again, you need to stick to these styles for each brief you create.
 
 ---
+
+Output Format Examples (JUST FOR REFERENCE)
+
+Image Brief Example:
+Concept Name: Benefit Point-Out Image: Product Center  
+Format: Static Image  
+Reference File: Benefit Point-Out Image: Product Center  
+Contents Position Description: Headline on top, product image center-aligned, 3 benefits on the left side, 2 on the right, each with an icon  
+Headline Version 1: The Benefits of Demon Destroyer Supplements  
+Headline Version 2: Creatine + Nootropic Gummies  
+Headline Version 3: Crush your demons with delicious gummies  
+Subheadline: Focus + Strength in One Gummy  
+Benefits:  
+ - Mental Focus to Crush Goals  
+ - Easy to Take, Delicious Gummy  
+ - Strength to Crush Workouts  
+Visuals: Product bottle, lifestyle image of gym user, icons for brain, dumbbell, and lightning  
+Color Palette Description: White background, red headline, black body text, red benefit icons  
+
+Video Brief Example:
+Reference File: Triple Pain Point Hook Script Template  
+Line 1: Are you tired of being a weak loser?  
+Visual: Clip of someone slouching at their desk with low energy  
+Line 2: Not hitting your work goals?  
+Visual: Someone failing a presentation  
+Line 3: Not hitting your fitness goals?  
+Visual: Person struggling to lift weights, frustrated  
+Line 4: Introducing “F*cking Unstoppable”, the creatine gummy with nootropics  
+Visual: Slow-mo bottle rotation, bold text on screen  
+Line 5: Boost your focus, power your body, and dominate your day  
+Visual: Montage – working out, focused at a laptop, smiling confidently  
+Line 6: Tap the link below to get yours  
+Visual: Website scroll + Add to Cart flow  
+Voiceover Style: Strong, motivational, like Thanos from the MCU  
+
+---
+
