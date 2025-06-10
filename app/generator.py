@@ -260,8 +260,7 @@ class CreativeBriefGenerator:
             filepath = os.path.join(output_dir, filename)
             
             with open(filepath, 'w', encoding='utf-8') as f:
-                f.write(brief_content)
-            
+                f.write(brief_content) 
             return filepath
         except Exception as e:
             print(f"Error saving brief to file: {e}")
