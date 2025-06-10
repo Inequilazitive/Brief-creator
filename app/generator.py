@@ -50,7 +50,7 @@ class CreativeBriefGenerator:
                 model=self.llm_model_name,
                 max_new_tokens=self.max_tokens,
                 do_sample=True,
-                temperature=0.5
+                temperature=0.7,
             )
             print("Text generation model loaded successfully!")
         except Exception as e:
@@ -207,6 +207,7 @@ class CreativeBriefGenerator:
             output_brief = self.llm_pipe(
                 llm_message,
                 max_new_tokens=self.max_tokens,
+                temperature=0.7,
             )
             print("Generated output brief:", output_brief)
             

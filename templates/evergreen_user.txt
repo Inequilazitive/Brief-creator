@@ -24,7 +24,7 @@ Content Bank - Please limit your visual recommendations to the following types o
 Reference Materials:
 Attached Image Description: {reference_image_description}
 
-Please create the requested advertisement briefs now based on the above information about the brand, FYI these are the EXAMPLES JUST FOR REFERENCE (DO NOT USE OR COPY PASTE THEM) for your reference again, you need to stick to these styles for each brief you create.
+Please create the requested advertisement briefs now based on the above information about the brand, Below are the examples for you to give better responses You need to be very creative and elaborate and descriptive. FYI these are the EXAMPLES JUST FOR REFERENCE (DO NOT USE OR COPY PASTE THEM) for your reference again, you need to stick to these styles for each brief you create.
 
 ---
 
