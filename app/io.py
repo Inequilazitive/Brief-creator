@@ -9,6 +9,7 @@ from urllib.parse import urlparse
 import re
 import spaces
 
+
 @spaces.GPU
 def flatten_dataframe(df: pd.DataFrame) -> List[str]:
     """Flatten a dataframe to a list of non-empty strings"""
