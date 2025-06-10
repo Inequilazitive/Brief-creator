@@ -8,7 +8,6 @@ import spaces
 generator = pipeline(
     "text-generation",
     model="google/gemma-3-1b-it",
-    device="cuda",
     torch_dtype=torch.bfloat16,
 )
 
