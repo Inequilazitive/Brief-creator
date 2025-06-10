@@ -259,7 +259,6 @@ Please create detailed creative briefs following the format specified in the ass
     demo.launch(
         server_name="0.0.0.0",
         server_port=7860,
-        share=True,
         show_error=True
     )
 
