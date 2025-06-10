@@ -253,7 +253,7 @@ class CreativeBriefGenerator:
             print(f"Error in text-only generation: {e}")
             return f"Error during generation: {str(e)}"
     
-    def save_brief_to_file(self, brief_content: str, filename: str, output_dir: str = "outputs/markdown") -> str:
+    def save_brief_to_file(self, brief_content: str, filename: str, output_dir: str = "../outputs/markdown") -> str:
         """Save generated brief to a markdown file"""
         try:
             os.makedirs(output_dir, exist_ok=True)
