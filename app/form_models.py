@@ -13,7 +13,7 @@ generator = pipeline(
 )
 
 import re
-
+@spaces.GPU
 def clean_generated_text(text, original_prompt):
     """Extract actual subheadline text from generated content, including markdown-style and bolded formats."""
     if original_prompt in text:
@@ -163,6 +163,7 @@ def generate_subheadlines(brand_name, angle_description):
         return [["Error generating subheadlines. Please try again."]]
 
 # Alternative implementation using a more direct approach
+@spaces.GPU
 def generate_headlines_simple(brand_name, angle_description):
     """Simplified version that returns hardcoded examples if model fails."""
     try:
@@ -174,7 +175,7 @@ def generate_headlines_simple(brand_name, angle_description):
             [f"Discover the Power of {brand_name}"],
             [f"Why {brand_name} is Different"]
         ]
-
+@spaces.GPU
 def generate_subheadlines_simple(brand_name, angle_description):
     """Simplified version that returns hardcoded examples if model fails."""
     try:

@@ -11,6 +11,7 @@ import traceback
 import spaces
 
 class CreativeBriefGenerator:
+    @spaces.GPU
     def __init__(self):
         """Initialize the vision-language model pipeline"""
         self.vlm_model_name = VLM_MODEL_NAME
@@ -59,7 +60,7 @@ class CreativeBriefGenerator:
             print(f"Error loading model: {e}")  
             # Fallback to a text-only model if vision model fails
             self._load_fallback_model()
-    
+    @spaces.GPU
     def _load_fallback_model(self):
         """Load a fallback text-only model if vision model fails"""
         try:
@@ -226,7 +227,7 @@ class CreativeBriefGenerator:
             print("Traceback:")
             print(traceback.format_exc())
             return f"Error during generation: {str(e)}"
-    
+    @spaces.GPU
     def _generate_text_only(self, text_prompt: str) -> str:
         """Fallback: Generate briefs using text only"""
         try:
@@ -255,7 +256,7 @@ class CreativeBriefGenerator:
         except Exception as e:
             print(f"Error in text-only generation: {e}")
             return f"Error during generation: {str(e)}"
-    
+    @spaces.GPU
     def save_brief_to_file(self, brief_content: str, filename: str, output_dir: str = "../outputs/markdown") -> str:
         """Save generated brief to a markdown file"""
         try:
@@ -272,6 +273,7 @@ class CreativeBriefGenerator:
 # Global instance to avoid reloading the model multiple times
 _generator_instance = None
 
+@spaces.GPU
 def get_generator() -> CreativeBriefGenerator:
     """Get singleton instance of the generator"""
     global _generator_instance

@@ -13,13 +13,13 @@ from weasyprint import HTML, CSS
 from io import StringIO
 import tempfile
 import os
-
+@spaces.GPU
 def process_dataframe_input(df_data):
     """Convert Gradio dataframe input (Pandas DataFrame) to list"""
     if df_data is None or df_data.empty:
         return None
     return df_data.iloc[:, 0].dropna().astype(str).str.strip().tolist()
-
+@spaces.GPU
 def create_download_files(content, brand_name):
     """Create downloadable files in different formats"""
     try:

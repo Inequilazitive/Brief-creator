@@ -4,16 +4,17 @@ from typing import Optional, List, Dict, Any
 import spaces
 
 class PromptBuilder:
+    @spaces.GPU
     def __init__(self, template_path: str):
         """Initialize with the path to the prompt template file."""
         self.template_path = template_path
         self.base_template = self._load_template()
-
+    @spaces.GPU
     def _load_template(self) -> str:
         """Load the base prompt template from file."""
         with open(self.template_path, "r", encoding="utf-8") as f:
             return f.read()
-
+    @spaces.GPU
     def build_prompt(
         self,
         brand_name: str,
@@ -73,7 +74,7 @@ class PromptBuilder:
         prompt = self._clean_empty_sections(prompt)
 
         return prompt
-
+    @spaces.GPU
     def _replace_placeholders(self, prompt: str, replacements: Dict[str, Any]) -> str:
         """Replace placeholder values in the prompt."""
         for key, value in replacements.items():
@@ -81,7 +82,7 @@ class PromptBuilder:
             if placeholder in prompt:
                 prompt = prompt.replace(placeholder, str(value))
         return prompt
-
+    @spaces.GPU
     def _format_headlines_section(self, prompt: str, headlines: Optional[List[str]]) -> str:
         """Format or remove ONLY the 'Headlines Options' section, preserving the rest."""
         if not headlines:
@@ -118,7 +119,7 @@ class PromptBuilder:
                 prompt += "\nHeadlines Options:\n" + headlines_lines.strip()
 
         return prompt
-
+    @spaces.GPU
     def _format_subheadlines_section(self, prompt: str, subheadlines: Optional[List[str]]) -> str:
         """Format or remove the subheadlines section."""
         if not subheadlines:
@@ -143,7 +144,7 @@ class PromptBuilder:
 
         return prompt
     
-
+    @spaces.GPU
     def _format_customer_reviews_section(self, prompt: str, customer_reviews: Optional[str]) -> str:
         """Format or remove the customer reviews section."""
         if not customer_reviews:
@@ -164,7 +165,7 @@ class PromptBuilder:
         )
 
         return prompt
-    
+    @spaces.GPU    
     def _format_benefits_section(self, prompt: str, benefits_list: Optional[List[str]]) -> str:
         """Format the Product Benefits section."""
         if not benefits_list:
@@ -210,7 +211,7 @@ class PromptBuilder:
     #     )
 
     #     return prompt
-
+    @spaces.GPU
     def _format_social_proof_section(self, prompt: str, social_proof: Optional[List[str]]) -> str:
         """Format or remove the social proof section."""
         if not social_proof:
@@ -234,7 +235,7 @@ class PromptBuilder:
         )
 
         return prompt
-
+    @spaces.GPU
     def _format_content_bank_section(self, prompt: str, content_bank: Optional[List[str]]) -> str:
         """Format the content bank section."""
         if not content_bank:
@@ -254,7 +255,7 @@ class PromptBuilder:
 
         return prompt
 
-
+    @spaces.GPU
     def _add_csv_data_section(self, prompt: str, csv_data: str) -> str:
         """Add CSV data section to the prompt after a specific reference sentence."""
 
@@ -275,14 +276,14 @@ class PromptBuilder:
 
         return prompt
 
-
+    @spaces.GPU
     def _clean_empty_sections(self, prompt: str) -> str:
         """Clean up any remaining empty sections or multiple newlines."""
         # Remove multiple consecutive newlines
         prompt = re.sub(r'\n{3,}', '\n\n', prompt)
         
         return prompt.strip()
-
+@spaces.GPU
 def create_ad_brief_prompt(
     brand_name: str,
     template_path: str = "templates/evergreen_template.txt",

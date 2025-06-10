@@ -9,10 +9,11 @@ from urllib.parse import urlparse
 import re
 import spaces
 
+@spaces.GPU
 def flatten_dataframe(df: pd.DataFrame) -> List[str]:
     """Flatten a dataframe to a list of non-empty strings"""
     return [str(cell).strip() for row in df.values for cell in row if pd.notna(cell) and str(cell).strip()]
-
+@spaces.GPU
 def parse_csv_file(file_obj) -> Optional[pd.DataFrame]:
     """Safely load a CSV file from Gradio's file input"""
     if file_obj is None:
@@ -22,7 +23,7 @@ def parse_csv_file(file_obj) -> Optional[pd.DataFrame]:
     except Exception as e:
         print(f"Error reading CSV: {e}")
         return None
-
+@spaces.GPU
 def process_swipe_csv(csv_df: pd.DataFrame) -> str:
     """
     Process the swipe CSV and format it for the LLaVA model.
@@ -48,7 +49,7 @@ def process_swipe_csv(csv_df: pd.DataFrame) -> str:
         formatted_data += f"- Reference Image URL: {reference_image}\n\n"
     
     return formatted_data
-
+@spaces.GPU
 def extract_image_urls_from_csv(csv_df: pd.DataFrame) -> List[str]:
     """Extract all image URLs from the CSV Reference Image column"""
     if csv_df is None or csv_df.empty:
@@ -63,7 +64,7 @@ def extract_image_urls_from_csv(csv_df: pd.DataFrame) -> List[str]:
                 urls.append(url)
     
     return urls
-
+@spaces.GPU
 def convert_google_drive_url(url: str) -> str:
     """Convert Google Drive sharing URL to direct download URL"""
     if 'drive.google.com' in url:
@@ -73,7 +74,7 @@ def convert_google_drive_url(url: str) -> str:
             file_id = file_id_match.group(1)
             return f"https://drive.google.com/uc?export=download&id={file_id}"
     return url
-
+@spaces.GPU
 def download_image_from_url(url: str, save_dir: str = "data/processed/images") -> Optional[str]:
     """Download image from URL and save locally"""
     try:
@@ -95,7 +96,7 @@ def download_image_from_url(url: str, save_dir: str = "data/processed/images") -
     except Exception as e:
         print(f"Error downloading image from {url}: {e}")
         return None
-
+@spaces.GPU
 def save_uploaded_files(files: Union[List, None], output_dir: str = "data/raw") -> List[str]:
     """Save uploaded files (like images or PDFs) and return paths"""
     if not files:
@@ -124,7 +125,7 @@ def save_uploaded_files(files: Union[List, None], output_dir: str = "data/raw") 
             print(f"Error saving file {file}: {e}")
 
     return saved_paths
-
+@spaces.GPU
 def extract_zip_assets(zip_path: str, extract_dir: str = "data/processed/unzipped") -> List[str]:
     """Extract contents of a ZIP file"""
     extracted_files = []
@@ -136,7 +137,7 @@ def extract_zip_assets(zip_path: str, extract_dir: str = "data/processed/unzippe
     except Exception as e:
         print(f"Error extracting ZIP: {e}")
     return extracted_files
-
+@spaces.GPU
 def prepare_reference_images(uploaded_images: List, csv_image_urls: List[str]) -> List[str]:
     """
     Prepare all reference images (uploaded + from CSV) for the model.
@@ -156,7 +157,7 @@ def prepare_reference_images(uploaded_images: List, csv_image_urls: List[str]) -
             all_image_paths.append(local_path)
     
     return all_image_paths
-
+@spaces.GPU
 def validate_image_file(filepath: str) -> bool:
     """Validate if file is a supported image format"""
     supported_formats = ['.jpg', '.jpeg', '.png', '.gif', '.bmp', '.webp']

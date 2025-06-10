@@ -2,6 +2,7 @@ import gradio as gr
 from app.form_models import generate_headlines, generate_subheadlines
 import spaces
 
+@spaces.GPU
 def build_ui(generate_callback):
     with gr.Blocks() as demo:
         gr.Markdown("# 📄 Creative Brief Generator")
