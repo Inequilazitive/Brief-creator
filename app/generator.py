@@ -11,7 +11,7 @@ import traceback
 #import spaces
 
 class CreativeBriefGenerator:
-    @spaces.GPU
+    #@spaces.GPU
     def __init__(self):
         """Initialize the vision-language model pipeline"""
         self.vlm_model_name = VLM_MODEL_NAME
@@ -22,7 +22,7 @@ class CreativeBriefGenerator:
         self.model = None
         self._load_model()
         
-    @spaces.GPU
+    #@spaces.GPU
     def _load_model(self):
         """Load the LLaVA model and processor"""
         try:
@@ -60,7 +60,7 @@ class CreativeBriefGenerator:
             print(f"Error loading model: {e}")  
             # Fallback to a text-only model if vision model fails
             self._load_fallback_model()
-    @spaces.GPU
+    #@spaces.GPU
     def _load_fallback_model(self):
         """Load a fallback text-only model if vision model fails"""
         try:
@@ -78,7 +78,7 @@ class CreativeBriefGenerator:
             print(f"Error loading fallback model: {e}")
             raise
         
-    @spaces.GPU    
+    #@spaces.GPU    
     def _get_image_description(self, image_paths: str) -> str:
         try:
             DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
@@ -130,7 +130,7 @@ class CreativeBriefGenerator:
             return "Error generating image description"
         
         
-    @spaces.GPU
+    #@spaces.GPU
     def generate_creative_briefs(
         self,
         brand_name: str,
@@ -199,7 +199,7 @@ class CreativeBriefGenerator:
             return self._generate_text_only(user_text_prompt)
     
     
-    @spaces.GPU
+    #@spaces.GPU
     def _generate_with_images(self, user_text_prompt: str,sys_text_prompt: str, image_paths: List[str]) -> str:
         """Generate briefs using images and text with LLaVA"""
         try:
@@ -228,7 +228,7 @@ class CreativeBriefGenerator:
             print("Traceback:")
             print(traceback.format_exc())
             return f"Error during generation: {str(e)}"
-    @spaces.GPU
+    #@spaces.GPU
     def _generate_text_only(self, text_prompt: str) -> str:
         """Fallback: Generate briefs using text only"""
         try:
@@ -257,7 +257,7 @@ class CreativeBriefGenerator:
         except Exception as e:
             print(f"Error in text-only generation: {e}")
             return f"Error during generation: {str(e)}"
-    @spaces.GPU
+    #@spaces.GPU
     def save_brief_to_file(self, brief_content: str, filename: str, output_dir: str = "../outputs/markdown") -> str:
         """Save generated brief to a markdown file"""
         try:
@@ -274,7 +274,7 @@ class CreativeBriefGenerator:
 # Global instance to avoid reloading the model multiple times
 _generator_instance = None
 
-@spaces.GPU
+#@spaces.GPU
 def get_generator() -> CreativeBriefGenerator:
     """Get singleton instance of the generator"""
     global _generator_instance

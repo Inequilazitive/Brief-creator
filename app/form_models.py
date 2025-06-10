@@ -12,7 +12,7 @@ generator = pipeline(
 )
 
 import re
-@spaces.GPU
+#@spaces.GPU
 def clean_generated_text(text, original_prompt):
     """Extract actual subheadline text from generated content, including markdown-style and bolded formats."""
     if original_prompt in text:
@@ -45,7 +45,7 @@ def clean_generated_text(text, original_prompt):
             subheadlines.append(hash_subheadline_match2.group(1).strip())
     return subheadlines
 
-@spaces.GPU
+#@spaces.GPU
 def generate_headlines(brand_name, angle_description):
     """Generate headlines compatible with Gradio dataframe format."""
     try:
@@ -102,7 +102,7 @@ def generate_headlines(brand_name, angle_description):
     except Exception as e:
         print(f"Error generating headlines: {e}")
         return [["Error generating headlines. Please try again."]]
-@spaces.GPU
+#@spaces.GPU
 def generate_subheadlines(brand_name, angle_description):
     """Generate subheadlines compatible with Gradio dataframe format."""
     try:
@@ -162,7 +162,7 @@ def generate_subheadlines(brand_name, angle_description):
         return [["Error generating subheadlines. Please try again."]]
 
 # Alternative implementation using a more direct approach
-@spaces.GPU
+#@spaces.GPU
 def generate_headlines_simple(brand_name, angle_description):
     """Simplified version that returns hardcoded examples if model fails."""
     try:
@@ -174,7 +174,7 @@ def generate_headlines_simple(brand_name, angle_description):
             [f"Discover the Power of {brand_name}"],
             [f"Why {brand_name} is Different"]
         ]
-@spaces.GPU
+#@spaces.GPU
 def generate_subheadlines_simple(brand_name, angle_description):
     """Simplified version that returns hardcoded examples if model fails."""
     try:

@@ -13,13 +13,13 @@ from weasyprint import HTML, CSS
 from io import StringIO
 import tempfile
 import os
-@spaces.GPU
+#@spaces.GPU
 def process_dataframe_input(df_data):
     """Convert Gradio dataframe input (Pandas DataFrame) to list"""
     if df_data is None or df_data.empty:
         return None
     return df_data.iloc[:, 0].dropna().astype(str).str.strip().tolist()
-@spaces.GPU
+#@spaces.GPU
 def create_download_files(content, brand_name):
     """Create downloadable files in different formats"""
     try:
@@ -116,7 +116,7 @@ def create_download_files(content, brand_name):
         print(f"Error creating download files: {e}")
         return None, None, None
     
-@spaces.GPU
+#@spaces.GPU
 def generate_brief_callback(
     brand_name, product_name, website_url, target_audience, tone,
     content_bank, campaign_type, swipe_csv, reference_images,
@@ -235,7 +235,7 @@ Please create detailed creative briefs following the format specified in the ass
     demo = build_ui(generate_brief_callback)
     return demo
    
-@spaces.GPU
+#@spaces.GPU
 def main():
     """Main function to launch the Gradio app"""
     
