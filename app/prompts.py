@@ -141,6 +141,7 @@ class PromptBuilder:
         )
 
         return prompt
+    
 
     def _format_customer_reviews_section(self, prompt: str, customer_reviews: Optional[str]) -> str:
         """Format or remove the customer reviews section."""
@@ -162,30 +163,52 @@ class PromptBuilder:
         )
 
         return prompt
-
-    def _format_benefits_section(self, prompt: str, benefits: Optional[List[str]]) -> str:
-        """Format or remove the benefits section."""
-        if not benefits:
-            prompt = re.sub(
-                r'Benefits of the product.*?(?=\n\n|\n[A-Z]|\nSocial|\nContent|$)',
-                '',
-                prompt,
-                flags=re.DOTALL
-            )
+    
+    def _format_benefits_section(self, prompt: str, benefits_list: Optional[List[str]]) -> str:
+        """Format the Product Benefits section."""
+        if not benefits_list:
+            # Use default benefits from template
             return prompt
 
-        benefits_text = "Benefits of the product for this angle:\n"
-        for i, benefit in enumerate(benefits, 1):
-            benefits_text += f"[Benefit {i}] {benefit}\n"
+        # Create the new benefits text block
+        benefits_text = "Product Benefits:\n"
+        for benefit in benefits_list:
+            benefits_text += f"- {benefit}\n"
 
+        # Replace the existing Product Benefits block using regex
         prompt = re.sub(
-            r'Benefits of the product.*?(?=\n\n|\n[A-Z]|\nSocial|\nContent|$)',
-            benefits_text.strip(),
+            r'Product Benefits:\n(?:- .*\n)*',
+            benefits_text,
             prompt,
             flags=re.DOTALL
         )
 
         return prompt
+
+
+    # def _format_benefits_section(self, prompt: str, benefits: Optional[List[str]]) -> str:
+    #     """Format or remove the benefits section."""
+    #     if not benefits:
+    #         prompt = re.sub(
+    #             r'Benefits of the product.*?(?=\n\n|\n[A-Z]|\nSocial|\nContent|$)',
+    #             '',
+    #             prompt,
+    #             flags=re.DOTALL
+    #         )
+    #         return prompt
+
+    #     benefits_text = "Benefits of the product for this angle:\n"
+    #     for i, benefit in enumerate(benefits, 1):
+    #         benefits_text += f"[Benefit {i}] {benefit}\n"
+
+    #     prompt = re.sub(
+    #         r'Benefits of the product.*?(?=\n\n|\n[A-Z]|\nSocial|\nContent|$)',
+    #         benefits_text.strip(),
+    #         prompt,
+    #         flags=re.DOTALL
+    #     )
+
+    #     return prompt
 
     def _format_social_proof_section(self, prompt: str, social_proof: Optional[List[str]]) -> str:
         """Format or remove the social proof section."""
@@ -222,8 +245,8 @@ class PromptBuilder:
             content_bank_text += f"{content_type}\n"
 
         prompt = re.sub(
-            r'Content Bank - Please limit.*?(?=\n\nAI Prompt Output|$)',
-            content_bank_text.strip(),
+            r'(Content Bank - Please limit.*?)(?=\nReference Materials:)',
+            content_bank_text.strip() + '\n',
             prompt,
             flags=re.DOTALL
         )

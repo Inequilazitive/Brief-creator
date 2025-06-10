@@ -70,7 +70,7 @@ def generate_headlines(brand_name, angle_description):
             ],
         ]
         
-        retries = 3
+        retries = 5
         for attempt in range(retries):
             try:
                 # Generate text
@@ -128,7 +128,7 @@ def generate_subheadlines(brand_name, angle_description):
             ],
         ]
         
-        retries = 3
+        retries = 5
         for attempt in range(retries):
             try:
                 # Generate text
