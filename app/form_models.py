@@ -2,7 +2,7 @@ from transformers import pipeline, AutoTokenizer, AutoModelForCausalLM, pipeline
 
 import re
 import torch
-import spaces
+#import spaces
 
 # Use a more powerful model (make sure it's installed or use Hugging Face Inference API)
 generator = pipeline(

@@ -7,7 +7,7 @@ import zipfile
 import requests
 from urllib.parse import urlparse
 import re
-import spaces
+#import spaces
 
 
 @spaces.GPU

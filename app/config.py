@@ -1,7 +1,7 @@
 # app/config.py
 
 from pathlib import Path
-import spaces
+#import spaces
 
 # === Paths ===
 BASE_DIR = Path(__file__).resolve().parent.parent
