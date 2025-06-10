@@ -35,7 +35,7 @@ class CreativeBriefGenerator:
                 self.vlm_model_name,
                 torch_dtype=torch.float16,
                 #device_map="auto",
-                _attn_implementation="flash_attention_2" if DEVICE == "cuda" else "eager"
+                #_attn_implementation="flash_attention_2" if DEVICE == "cuda" else "eager"
             ).to(DEVICE)
             self.vlm_processor = AutoProcessor.from_pretrained(self.vlm_model_name)
             # if device == "cpu":
