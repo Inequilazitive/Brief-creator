@@ -4,6 +4,7 @@ sdk: gradio  # or streamlit
 app_file: app/main.py
 ---
 
+
 # Brief Generator
 
 # 🎨 Creative Brief Generator
