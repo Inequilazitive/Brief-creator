@@ -257,8 +257,9 @@ Please create detailed creative briefs following the format specified in the ass
     
     # Launch the app
     demo.launch(
-        show_error=True
+        show_error=True,
+        ssr_mode=False
     )
 
 if __name__ == "__main__":
-    main(ssr_mode=False)
+    main()
