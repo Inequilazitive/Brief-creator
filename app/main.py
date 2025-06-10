@@ -207,7 +207,34 @@ def generate_brief_callback(
         print("Generation error:")
         traceback.print_exc()  # Prints the full traceback to stderr
         return error_msg, None, None, None
+
+def generate_gradio_interface():
+    """Return the Gradio Blocks interface for Modal deployment"""
+    from app.config import UPLOADS_DIR, PROCESSED_DIR, BRIEFS_DIR
+    for directory in [UPLOADS_DIR, PROCESSED_DIR, BRIEFS_DIR]:
+        directory.mkdir(parents=True, exist_ok=True)
+
+    # Check and create dummy templates if missing
+    template_files = [EVERGREEN_TEMPLATE_PATH, PROMO_TEMPLATE_PATH]
+    missing_templates = [t for t in template_files if not Path(t).exists()]
     
+    for template in missing_templates:
+        Path(template).parent.mkdir(parents=True, exist_ok=True)
+        with open(template, 'w') as f:
+            f.write("""# Creative Brief Template
+
+Brand: {brand_name}
+Product: {product_name}
+Angle: {angle_description}
+
+Generate {num_image_briefs} static image briefs and {num_video_briefs} video briefs for this campaign.
+
+Please create detailed creative briefs following the format specified in the assignment requirements.
+""")
+
+    demo = build_ui(generate_brief_callback)
+    return demo
+   
 @spaces.GPU
 def main():
     """Main function to launch the Gradio app"""
