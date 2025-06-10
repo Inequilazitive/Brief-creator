@@ -6,15 +6,17 @@ image = (
     modal.Image.debian_slim(python_version="3.10")
     .apt_install(
         "libpango-1.0-0",
+        "libpangoft2-1.0-0",          # 👈 NEW
         "libcairo2",
         "libgdk-pixbuf2.0-0",
-        "libglib2.0-0",       # Includes libgobject
+        "libglib2.0-0",
         "libffi-dev",
-        "shared-mime-info"
+        "shared-mime-info",
     )
     .pip_install_from_requirements("requirements.txt")
     .add_local_dir(".", remote_path="/root")
 )
+
 
 
 # Define the web-serving function as an ASGI app
