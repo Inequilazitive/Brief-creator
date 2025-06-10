@@ -1,6 +1,7 @@
 import pandas as pd
 import re
 from typing import Optional, List, Dict, Any
+import spaces
 
 class PromptBuilder:
     def __init__(self, template_path: str):

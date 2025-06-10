@@ -261,4 +261,4 @@ Please create detailed creative briefs following the format specified in the ass
     )
 
 if __name__ == "__main__":
-    main()
+    main(ssr_mode=False)

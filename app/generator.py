@@ -8,6 +8,7 @@ from app.config import VLM_MODEL_NAME, LLM_MODEL_NAME, MAX_NEW_TOKENS
 from app.prompts import PromptBuilder
 from app.io import process_swipe_csv, prepare_reference_images, extract_image_urls_from_csv
 import traceback
+import spaces
 
 class CreativeBriefGenerator:
     def __init__(self):
