@@ -32,3 +32,7 @@ pathlib
 typing_extensions
 
 modal
+markdown
+weasyprint
+beautifulsoup4
+tempfile
