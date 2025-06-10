@@ -129,6 +129,7 @@ class CreativeBriefGenerator:
             print(traceback.format_exc())
             return "Error generating image description"
         
+        
     @spaces.GPU
     def generate_creative_briefs(
         self,
