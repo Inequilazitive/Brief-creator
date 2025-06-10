@@ -115,7 +115,8 @@ def create_download_files(content, brand_name):
     except Exception as e:
         print(f"Error creating download files: {e}")
         return None, None, None
-
+    
+@spaces.GPU
 def generate_brief_callback(
     brand_name, product_name, website_url, target_audience, tone,
     content_bank, campaign_type, swipe_csv, reference_images,
@@ -206,7 +207,8 @@ def generate_brief_callback(
         print("Generation error:")
         traceback.print_exc()  # Prints the full traceback to stderr
         return error_msg, None, None, None
-
+    
+@spaces.GPU
 def main():
     """Main function to launch the Gradio app"""
     

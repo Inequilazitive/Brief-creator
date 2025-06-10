@@ -20,7 +20,8 @@ class CreativeBriefGenerator:
         self.vlm_processor = None
         self.model = None
         self._load_model()
-    
+        
+    @spaces.GPU
     def _load_model(self):
         """Load the LLaVA model and processor"""
         try:
@@ -76,6 +77,7 @@ class CreativeBriefGenerator:
             print(f"Error loading fallback model: {e}")
             raise
         
+    @spaces.GPU    
     def _get_image_description(self, image_paths: str) -> str:
         try:
             DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
@@ -126,7 +128,7 @@ class CreativeBriefGenerator:
             print(traceback.format_exc())
             return "Error generating image description"
         
-
+    @spaces.GPU
     def generate_creative_briefs(
         self,
         brand_name: str,
@@ -195,7 +197,7 @@ class CreativeBriefGenerator:
             return self._generate_text_only(user_text_prompt)
     
     
-    
+    @spaces.GPU
     def _generate_with_images(self, user_text_prompt: str,sys_text_prompt: str, image_paths: List[str]) -> str:
         """Generate briefs using images and text with LLaVA"""
         try:

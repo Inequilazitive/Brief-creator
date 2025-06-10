@@ -46,7 +46,7 @@ def clean_generated_text(text, original_prompt):
             subheadlines.append(hash_subheadline_match2.group(1).strip())
     return subheadlines
 
-
+@spaces.GPU
 def generate_headlines(brand_name, angle_description):
     """Generate headlines compatible with Gradio dataframe format."""
     try:
@@ -103,7 +103,7 @@ def generate_headlines(brand_name, angle_description):
     except Exception as e:
         print(f"Error generating headlines: {e}")
         return [["Error generating headlines. Please try again."]]
-
+@spaces.GPU
 def generate_subheadlines(brand_name, angle_description):
     """Generate subheadlines compatible with Gradio dataframe format."""
     try:
