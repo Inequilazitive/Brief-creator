@@ -51,7 +51,10 @@ def generate_brief_callback(
         
         
         content_bank= [i.strip() for i in re.split(r'[;,]', content_bank) if i.strip()]
-
+        if angle_and_benefits:
+            angle_and_benefits = [i.strip() for i in re.split(r'[;,]', angle_and_benefits) if i.strip()]
+        if social_proof:
+            social_proof = [i.strip() for i in re.split(r'[;,]', social_proof) if i.strip()]
         # Get generator instance
         generator = get_generator()
         
@@ -69,7 +72,7 @@ def generate_brief_callback(
             uploaded_images=reference_images,
             headlines=headlines,
             subheadlines=subheadlines,
-            social_proof=[social_proof] if social_proof else None,
+            social_proof=social_proof if social_proof else None,
             angle_and_benefits=angle_and_benefits,
             num_image_briefs=int(num_image_briefs),
             num_video_briefs=int(num_video_briefs),

@@ -19,7 +19,7 @@ def build_ui(generate_callback):
             reference_images = gr.File(label="Upload Reference Images", file_types=[".png", ".jpg", ".jpeg"], file_count="multiple")
 
             angle_description = gr.Textbox(label="Angle Description", lines=3, placeholder="e.g., Emphasize natural air purification without harsh chemicals.")
-            angle_and_benefits = gr.Textbox(label="Angle Summary with Benefits (Optional)", lines=3, placeholder="e.g., Azuna purifies air with plant-based technology...")
+            angle_and_benefits = gr.Textbox(label="Product Benefits with this angle", lines=3, placeholder="e.g., Azuna purifies air with plant-based technology...")
 
             gr.Markdown("### 🔤 Headlines")
             generate_headlines_btn = gr.Button("🪄 Generate Headlines")
